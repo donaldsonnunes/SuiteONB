@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PontoWeb Pro - Suíte de Ferramentas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
+        .tab-content { height: calc(100vh - 64px); width: 100%; border: none; }
+        .active-tab { border-bottom: 3px solid #3b82f6; color: #3b82f6 !important; }
+        
+        /* Inicialmente visíveis para evitar o erro de "Nenhum recurso disponível" */
+        .tab-btn { display: inline-block; } 
+    </style>
+</head>
+<body class="bg-slate-100 flex flex-col">
+
+    <header class="bg-white shadow-md z-10">
+        <nav class="flex items-center justify-between px-6 h-16">
+            <div class="flex items-center gap-2">
+                <div class="bg-blue-600 p-2 rounded-lg text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
+                    </svg>
+                </div>
+                <h1 class="text-xl font-bold text-slate-800">Ahgora Suite <span class="text-sm font-normal text-slate-500">v2.0</span></h1>
+            </div>
+
+            <div id="tab-container" class="flex gap-4 h-full">
+                <button onclick="openTab(event, 'ElegibilidadeV1.html')" data-file="ElegibilidadeV1.html" class="tab-btn px-4 text-slate-600 font-semibold hover:bg-slate-50 transition-all">Elegibilidade Ponto</button>
+                <button onclick="openTab(event, 'QuitaçãoParcial.html')" data-file="QuitaçãoParcial.html" class="tab-btn px-4 text-slate-600 font-semibold hover:bg-slate-50 transition-all">Quitação Parcial</button>
+                <button onclick="openTab(event, 'Novo Conversor de EscalasV2.html')" data-file="Novo Conversor de EscalasV2.html" class="tab-btn px-4 text-slate-600 font-semibold hover:bg-slate-50 transition-all">Conversor AI</button>
+                <button onclick="openTab(event, 'Conversor EscalasV11.html')" data-file="Conversor EscalasV11.html" class="tab-btn px-4 text-slate-600 font-semibold hover:bg-slate-50 transition-all">Conversor CSV</button>
+                <button onclick="openTab(event, 'analise linha tempo.html')" data-file="analise linha tempo.html" class="tab-btn px-4 text-slate-600 font-semibold hover:bg-slate-50 transition-all">Análise Timeline</button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-grow bg-slate-200">
+        <iframe id="frame-content" src="about:blank" class="tab-content"></iframe>
+    </main>
+
+    <script>
+        const frame = document.getElementById('frame-content');
+
+        function openTab(evt, fileName) {
+            frame.src = fileName;
+            const tabbtns = document.querySelectorAll(".tab-btn");
+            tabbtns.forEach(btn => btn.classList.remove("active-tab"));
+            if (evt) evt.currentTarget.classList.add("active-tab");
+        }
+
+        async function inicializarSuite() {
+            const botoes = document.querySelectorAll('.tab-btn');
+            let primeiroBtnValido = null;
+
+            for (let btn of botoes) {
+                const arquivo = btn.getAttribute('data-file');
+                
+                try {
+                    // Tenta validar a existência apenas se não for file://
+                    if (window.location.protocol !== 'file:') {
+                        const response = await fetch(arquivo, { method: 'HEAD' });
+                        if (!response.ok) {
+                            btn.remove();
+                            continue;
+                        }
+                    }
+                    // Se for file:// ou arquivo ok, marca como candidato a abrir primeiro
+                    if (!primeiroBtnValido) primeiroBtnValido = btn;
+                } catch (e) {
+                    // Em caso de erro de CORS no file://, mantemos o botão visível
+                    if (!primeiroBtnValido) primeiroBtnValido = btn;
+                }
+            }
+
+            // Clique automático na primeira aba disponível
+            if (primeiroBtnValido) {
+                primeiroBtnValido.click();
+            }
+        }
+
+        window.onload = inicializarSuite;
+    </script>
+</body>
+</html>

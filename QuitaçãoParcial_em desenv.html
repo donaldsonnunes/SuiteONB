@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>PontoWeb Pro - Automação Ahgora (Sumarizado)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        :root { --primary: #007bff; --success: #28a745; --danger: #dc3545; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; padding: 20px; background-color: var(--bg); color: #333; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .section { margin-bottom: 25px; padding: 20px; border: 1px solid #e0e6ed; border-radius: 8px; background: #fff; }
+        .grid-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; }
+        .rule-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; background: #f8f9fa; padding: 10px; border-radius: 6px; }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; background: #fff; border: 1px solid #dee2e6; border-radius: 6px; margin-top: 5px; }
+        input, select { padding: 10px; border: 1px solid #ced4da; border-radius: 6px; font-size: 14px; }
+        button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 6px; font-weight: 600; transition: 0.3s; }
+        .btn-main { background: var(--success); color: white; width: 100%; font-size: 18px; height: 60px; margin-top: 20px; }
+        .btn-main:hover { background: #218838; transform: translateY(-2px); }
+        .btn-add { background: var(--primary); color: white; margin-bottom: 10px; }
+        .btn-reset { background: #6c757d; color: white; float: right; font-size: 12px; padding: 5px 10px; }
+        .progress-container { height: 12px; background: #e9ecef; border-radius: 6px; margin: 20px 0; overflow: hidden; display: none; }
+        .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
+        .log-area { background: #1e1e1e; color: #adff2f; padding: 15px; font-family: 'Fira Code', monospace; font-size: 12px; border-radius: 6px; height: 220px; overflow-y: auto; border: 3px solid #333; }
+        .upload-box { border: 2px dashed var(--primary); padding: 20px; text-align: center; border-radius: 8px; background: #fff; margin-top: 15px; }
+        .summary-opt { background: #fff3cd; padding: 10px; border-radius: 6px; margin-top: 10px; border: 1px solid #ffeeba; display: flex; align-items: center; gap: 10px; font-weight: bold; }
+        h2, h3 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button class="btn-reset" onclick="resetarConfig()">Limpar Tudo</button>
+    <h2>⚙️ PontoWeb Pro - Ahgora (Sumarizado)</h2>
+
+    <div class="section">
+        <h3>1. WebService e Modo de Exportação</h3>
+        <div class="grid-3">
+            <div><label>Chave SOAP Empresa</label><input type="text" id="ws-empresa" placeholder="Hash Ahgora" style="width:100%" oninput="salvar()"></div>
+            <div><label>Data Início</label><input type="text" id="ws-datai" placeholder="DDMMYYYY" style="width:100%" oninput="salvar()"></div>
+            <div><label>Data Fim</label><input type="text" id="ws-dataf" placeholder="DDMMYYYY" style="width:100%" oninput="salvar()"></div>
+        </div>
+        
+        <div class="summary-opt">
+            <input type="checkbox" id="opt-sumarizar" style="width: 20px; height: 20px;" onchange="salvar()">
+            <label for="opt-sumarizar">Gerar Total por Matrícula/Evento (Agrupar resultados)</label>
+        </div>
+
+        <div class="upload-box">
+            <label>📂 <strong>Subir arquivo de Matrículas (CSV/TXT):</strong></label><br><br>
+            <input type="file" id="file-mats" accept=".csv,.txt" onchange="lerArquivoMatriculas()">
+            <p id="count-mats" style="font-size: 13px; color: var(--primary); margin-top: 8px; font-weight: bold;">0 matrículas carregadas</p>
+            <input type="hidden" id="lista-mats-hidden">
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>2. Distribuição Diária (Trabalhado - Previsto)</h3>
+        <div id="container-diario"></div>
+        <button class="btn-add" onclick="addDiaria()">+ Adicionar Faixa</button>
+        <div style="margin-top:10px; padding-top:15px; border-top: 1px dashed #ccc;">
+            <label><strong>Evento p/ Sobra Final:</strong></label>
+            <div class="rule-row">
+                <input type="text" id="sobra-cod" placeholder="Cód" style="width: 80px;" oninput="salvar(); renderChecks();">
+                <input type="text" id="sobra-desc" placeholder="Descrição da Sobra" style="flex:1" oninput="salvar()">
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>3. Regras de Período (Semanal/Mensal)</h3>
+        <div id="container-periodo"></div>
+        <button class="btn-add" onclick="addPeriodo()">+ Adicionar Regra</button>
+    </div>
+
+    <div class="progress-container" id="p-box"><div class="progress-bar" id="p-bar"></div></div>
+    <button class="btn-main" onclick="iniciarProcesso()">🚀 INICIAR PROCESSAMENTO</button>
+
+    <div class="log-area" id="console">Lembre-se de ativar o proxy em cors-anywhere.herokuapp.com/corsdemo</div>
+</div>
+
+<script>
+    const TAG_TRABALHADAS = "Horas Trabalhadas";
+    const TAG_PREVISTAS = "Horas Previstas";
+
+    const tToM = (t) => { if(!t || !t.includes(':')) return 0; const p = t.replace('-','').split(':').map(Number); return (p[0]*60)+(p[1]||0); };
+    const mToT = (m) => { const a = Math.abs(m); return String(Math.floor(a/60)).padStart(2,'0')+":"+String(a%60).padStart(2,'0'); };
+    function getSemana(dStr) {
+        const d = new Date(dStr.replace(/-/g, '/'));
+        const j1 = new Date(d.getFullYear(),0,1);
+        return Math.ceil((((d - j1) / 86400000) + j1.getDay() + 1) / 7) + "/" + d.getFullYear();
+    }
+    function log(m, c = "#adff2f") { const el = document.getElementById('console'); el.innerHTML += `> <span style="color:${c}">${m}</span><br>`; el.scrollTop = el.scrollHeight; }
+
+    function salvar() {
+        const cfg = {
+            ws: { emp: id('ws-empresa').value, datai: id('ws-datai').value, dataf: id('ws-dataf').value, mats: id('lista-mats-hidden').value, sumarizar: id('opt-sumarizar').checked },
+            diaria: Array.from(document.querySelectorAll('.diaria-item')).map(el => ({ cod: el.querySelector('.r-cod').value, desc: el.querySelector('.r-desc').value, lim: el.querySelector('.r-lim').value })),
+            sobra: { cod: id('sobra-cod').value, desc: id('sobra-desc').value },
+            periodo: Array.from(document.querySelectorAll('.periodo-item')).map(el => ({ cod: el.querySelector('.p-cod').value, desc: el.querySelector('.p-desc').value, per: el.querySelector('.p-per').value, lim: el.querySelector('.p-lim').value, fontes: Array.from(el.querySelectorAll('input:checked')).map(i => i.value) }))
+        };
+        localStorage.setItem('ponto_ahgora_sum', JSON.stringify(cfg));
+    }
+
+    function id(name) { return document.getElementById(name); }
+
+    function carregar() {
+        const d = localStorage.getItem('ponto_ahgora_sum');
+        if(!d) { addDiaria(); addPeriodo(); return; }
+        const c = JSON.parse(d);
+        id('ws-empresa').value = c.ws.emp||''; id('ws-datai').value = c.ws.datai||''; id('ws-dataf').value = c.ws.dataf||'';
+        id('lista-mats-hidden').value = c.ws.mats||''; id('opt-sumarizar').checked = c.ws.sumarizar||false;
+        id('sobra-cod').value = c.sobra.cod||''; id('sobra-desc').value = c.sobra.desc||'';
+        if(c.ws.mats) id('count-mats').innerText = `${c.ws.mats.split(',').length} matrículas memorizadas`;
+        c.diaria.forEach(x => addDiaria(x));
+        c.periodo.forEach(x => addPeriodo(x));
+        renderChecks();
+    }
+
+    function addDiaria(d={cod:'',desc:'',lim:'00:00'}) {
+        const div = document.createElement('div'); div.className = 'rule-row diaria-item';
+        div.innerHTML = `<input type="text" class="r-cod" value="${d.cod}" placeholder="Cód" style="width:70px" oninput="salvar();renderChecks()">
+            <input type="text" class="r-desc" value="${d.desc}" placeholder="Descrição" style="flex:1" oninput="salvar()">
+            <input type="time" class="r-lim" value="${d.lim}" oninput="salvar()">
+            <button onclick="this.parentElement.remove();salvar();renderChecks()" style="background:none;color:var(--danger)">✖</button>`;
+        id('container-diario').appendChild(div);
+    }
+
+    function addPeriodo(d=null) {
+        const div = document.createElement('div'); div.className = 'section periodo-item';
+        const v = d || {cod:'',desc:'',per:'semanal',lim:'00:00',fontes:[]};
+        div.innerHTML = `<div class="rule-row"><input type="text" class="p-cod" value="${v.cod}" placeholder="Cód" style="width:70px" oninput="salvar()">
+            <input type="text" class="p-desc" value="${v.desc}" placeholder="Evento Final" style="flex:1" oninput="salvar()">
+            <select class="p-per" onchange="salvar()"><option value="semanal" ${v.per=='semanal'?'selected':''}>Semanal</option><option value="mensal" ${v.per=='mensal'?'selected':''}>Mensal</option></select>
+            <input type="time" class="p-lim" value="${v.lim}" oninput="salvar()">
+            <button onclick="this.parentElement.parentElement.remove();salvar();" style="background:none;color:var(--danger)">✖</button></div><div class="checkbox-group p-fontes"></div>`;
+        id('container-periodo').appendChild(div);
+        renderChecks();
+    }
+
+    function renderChecks() {
+        const cods = Array.from(document.querySelectorAll('.r-cod')).map(i => i.value).filter(v => v);
+        if(id('sobra-cod').value) cods.push(id('sobra-cod').value);
+        document.querySelectorAll('.periodo-item').forEach((item, idx) => {
+            const g = item.querySelector('.p-fontes');
+            const data = JSON.parse(localStorage.getItem('ponto_ahgora_sum'));
+            const checked = data?.periodo[idx]?.fontes || [];
+            g.innerHTML = cods.map(c => `<label><input type="checkbox" value="${c}" ${checked.includes(c)?'checked':''} onchange="salvar()"> ${c}</label>`).join('');
+        });
+    }
+
+    function resetarConfig() { if(confirm("Apagar regras?")) { localStorage.clear(); location.reload(); } }
+
+    function lerArquivoMatriculas() {
+        const f = id('file-mats').files[0];
+        if(!f) return;
+        Papa.parse(f, { complete: (r) => {
+            const lista = r.data.flat().map(m => String(m).trim()).filter(m => m && m.length > 1 && m !== "Matrícula");
+            id('lista-mats-hidden').value = lista.join(',');
+            id('count-mats').innerText = `${lista.length} matrículas carregadas.`;
+            salvar();
+        }});
+    }
+
+    async function iniciarProcesso() {
+        salvar();
+        const cfg = JSON.parse(localStorage.getItem('ponto_ahgora_sum'));
+        const mats = cfg.ws.mats.split(',').filter(m => m);
+        if(!cfg.ws.emp || mats.length === 0) return alert("Preencha a chave e suba as matrículas.");
+
+        id('p-box').style.display = 'block';
+        log("Iniciando...");
+        
+        let tempRows = [];
+        const logsPorMat = {};
+
+        for(let i=0; i < mats.length; i++) {
+            const mat = mats[i];
+            id('p-bar').style.width = (((i+1) / mats.length) * 100) + "%";
+            log(`Processando: ${mat}`);
+            
+            const xml = await chamarWS(mat, cfg.ws);
+            if(xml) {
+                const diarios = xml.getElementsByTagName('Diario');
+                logsPorMat[mat] = [];
+                for(let d of diarios) {
+                    const dia = d.getElementsByTagName('dia')[0].textContent;
+                    let trab = 0, prev = 0;
+                    for(let r of d.getElementsByTagName('Resultado')) {
+                        const n = r.getElementsByTagName('nome')[0].textContent;
+                        const v = r.getElementsByTagName('valor')[0].textContent;
+                        if(n === TAG_TRABALHADAS) trab = tToM(v);
+                        if(n === TAG_PREVISTAS) prev = tToM(v);
+                    }
+                    let excesso = trab - prev;
+                    if(excesso > 0) {
+                        cfg.diaria.forEach(reg => {
+                            let dose = Math.min(excesso, tToM(reg.lim));
+                            if(dose > 0) { logsPorMat[mat].push({ dia, cod: reg.cod, desc: reg.desc, min: dose }); excesso -= dose; }
+                        });
+                        if(excesso > 0 && cfg.sobra.cod) logsPorMat[mat].push({ dia, cod: cfg.sobra.cod, desc: cfg.sobra.desc, min: excesso });
+                    }
+                }
+            }
+            await new Promise(r => setTimeout(r, 200));
+        }
+
+        // Agrupamento
+        for(let mat in logsPorMat) {
+            const logs = logsPorMat[mat];
+            cfg.periodo.forEach(regP => {
+                const agrupado = {};
+                logs.filter(l => regP.fontes.includes(l.cod)).forEach(l => {
+                    const chave = regP.per === 'semanal' ? getSemana(l.dia) : l.dia.substring(0,7);
+                    agrupado[chave] = (agrupado[chave] || 0) + l.min;
+                });
+                for(let p in agrupado) {
+                    const diff = agrupado[p] - tToM(regP.lim);
+                    if(diff > 0) tempRows.push({ Matrícula: mat, Período: p, Código: regP.cod, Evento: regP.desc, min: diff });
+                }
+            });
+            logs.forEach(l => tempRows.push({ Matrícula: mat, Período: l.dia, Código: l.cod, Evento: l.desc, min: l.min }));
+        }
+
+        let finalRows = [];
+        if(cfg.ws.sumarizar) {
+            const sumMap = {};
+            tempRows.forEach(r => {
+                const key = `${r.Matrícula}_${r.Código}`;
+                if(!sumMap[key]) sumMap[key] = { Matrícula: r.Matrícula, Código: r.Código, Evento: r.Evento, min: 0 };
+                sumMap[key].min += r.min;
+            });
+            finalRows = Object.values(sumMap).map(v => ({ Matrícula: v.Matrícula, Código: v.Código, Evento: v.Evento, Total: mToT(v.min) }));
+        } else {
+            finalRows = tempRows.map(r => ({ Matrícula: r.Matrícula, Período: r.Período, Código: r.Código, Evento: r.Evento, Valor: mToT(r.min) }));
+        }
+
+        if(finalRows.length > 0) {
+            const csv = Papa.unparse(finalRows);
+            const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = `Relatorio_Ponto_${cfg.ws.sumarizar?'Sumarizado':'Detalhado'}.csv`;
+            a.click();
+            log("Concluído!");
+        } else { log("Nenhum dado encontrado."); }
+    }
+
+    async function chamarWS(mat, ws) {
+        const proxy = "https://cors-anywhere.herokuapp.com/";
+        const target = "https://www.ahgora.com.br/ws/pontoweb.php";
+        const soap = `<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="https://www.ahgora.com.br/ws"><soapenv:Body><ws:obterResultados><empresa>${ws.emp}</empresa><matricula>${mat}</matricula><datai>${ws.datai}</datai><dataf>${ws.dataf}</dataf><opcoes><Opcao><nome>periodo_aberto</nome><valor>true</valor></Opcao><Opcao><nome>apuracao_diaria</nome><valor>true</valor></Opcao></opcoes></ws:obterResultados></soapenv:Body></soapenv:Envelope>`;
+        try {
+            const r = await fetch(proxy + target, { method: 'POST', headers: { 'Content-Type': 'text/xml', 'X-Requested-With': 'XMLHttpRequest' }, body: soap });
+            const xml = new DOMParser().parseFromString(await r.text(), "text/xml");
+            return xml.getElementsByTagName('erros')[0]?.textContent ? null : xml;
+        } catch (e) { return null; }
+    }
+
+    document.addEventListener('DOMContentLoaded', carregar);
+</script>
+</body>
+</html>

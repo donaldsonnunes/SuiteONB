@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrador Ahgora - Com Instruções</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eaeff2; padding: 20px; color: #333; }
+        .container { max-width: 950px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { border-bottom: 3px solid #007bff; padding-bottom: 10px; color: #2c3e50; margin-top: 0; }
+        
+        /* Estilos das Instruções */
+        .instructions-box { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 15px; margin-bottom: 25px; }
+        .instructions-box h3 { margin-top: 0; font-size: 16px; color: #0056b3; display: flex; align-items: center; gap: 8px; }
+        .column-list { display: flex; gap: 15px; flex-wrap: wrap; margin: 10px 0; }
+        .column-tag { background: #e9ecef; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 13px; border: 1px solid #ced4da; color: #495057; }
+        .code-snippet { background: #2d2d2d; color: #a5fb8f; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 12px; margin-top: 10px; white-space: pre-wrap; }
+
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px; }
+        
+        label { font-weight: 600; display: block; margin-bottom: 5px; color: #34495e; font-size: 14px; }
+        input[type="text"], input[type="date"], select { width: 100%; padding: 10px; border: 1px solid #bdc3c7; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
+        
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 5px; background: #fff; padding: 5px; border: 1px solid #ccc; border-radius: 4px; }
+        input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+        
+        button { width: 100%; padding: 12px; background: #27ae60; color: white; border: none; font-size: 16px; cursor: pointer; border-radius: 5px; font-weight: bold; transition: 0.3s; margin-top: 10px; }
+        button:hover { background: #2ecc71; }
+        button:disabled { background: #95a5a6; cursor: not-allowed; }
+
+        .table-container { margin-top: 20px; overflow-x: auto; border: 1px solid #ddd; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: #007bff; color: white; text-align: left; padding: 10px; }
+        td { padding: 8px 10px; border-bottom: 1px solid #eee; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+
+        textarea { width: 100%; height: 120px; font-family: 'Consolas', monospace; font-size: 11px; background: #2c3e50; color: #ecf0f1; padding: 10px; border-radius: 5px; margin-top: 5px; border: none; }
+        
+        .alert-proxy { background: #fff3cd; color: #856404; padding: 10px; text-align: center; border-radius: 4px; margin-bottom: 15px; font-size: 13px; border: 1px solid #ffeeba; }
+        .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+        .badge-ok { background: #d4edda; color: #155724; }
+        .badge-err { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Integrador Ahgora - Sincronização de Funcionários</h2>
+
+    <div class="instructions-box">
+        <h3>📂 Instruções de Layout do Arquivo (CSV)</h3>
+        <p style="margin: 5px 0; font-size: 14px;">O arquivo deve conter cabeçalhos na primeira linha. As colunas obrigatórias são:</p>
+        
+        <div class="column-list">
+            <span class="column-tag">Matrícula</span>
+            <span class="column-tag">PIS</span>
+            <span class="column-tag">Nome</span>
+            <span class="column-tag">Data de Admissão</span>
+        </div>
+
+        <p style="margin: 10px 0 5px 0; font-size: 13px;"><strong>Exemplo de conteúdo (copie e cole no Excel/Bloco de Notas):</strong></p>
+        <div class="code-snippet">Matrícula;PIS;Nome;Data de Admissão
+102030;12345678901;João da Silva;01/05/2023
+102031;98765432100;Maria Oliveira;2023-06-10</div>
+        
+        <p style="margin-top: 8px; font-size: 12px; color: #666;">* Aceita separador ponto e vírgula (;) ou vírgula (,). A data pode ser DD/MM/AAAA ou AAAA-MM-DD.</p>
+    </div>
+
+    <div class="alert-proxy">
+        <strong>⚠️ Importante:</strong> Para enviar, ative o Proxy temporário clicando aqui: 
+        <a href="https://cors-anywhere.herokuapp.com/corsdemo" target="_blank" style="font-weight:bold; color:#856404;">ATIVAR CORS ANYWHERE</a>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+        <label>Chave da Empresa (Token Ahgora):</label>
+        <input type="text" id="empresaKey" value="052e92ab6a9e4885eef180225a3bcb04" placeholder="Cole a chave aqui...">
+    </div>
+
+    <div class="row">
+        <div>
+            <label>Bate Ponto (Valor Fixo):</label>
+            <select id="batePonto">
+                <option value="Não">Não</option>
+                <option value="Ponto Obrigatorio">Ponto Obrigatório</option>
+                <option value="Sim">Sim</option>
+            </select>
+        </div>
+        <div>
+            <label>Data Troca Elegibilidade:</label>
+            <input type="date" id="dataElegibilidadeManual" value="2000-05-01">
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="chkUsaAdmissao" onchange="alternarInputData()">
+                <label for="chkUsaAdmissao" style="font-weight: normal; font-size: 13px; cursor: pointer;">
+                    Usar a <b>Data de Admissão</b> do CSV
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div style="background: #f1f3f5; padding: 20px; border-radius: 6px; border: 2px dashed #ced4da; text-align: center;">
+        <label style="margin-bottom: 10px;">Selecione seu arquivo CSV aqui:</label>
+        <input type="file" id="csvFile" accept=".csv" onchange="lerCSV()">
+    </div>
+
+    <div id="previewArea" style="display:none;">
+        <h3 style="font-size: 16px; margin-top: 20px; color: #555;">Pré-visualização dos Dados a Enviar</h3>
+        <div class="table-container">
+            <table id="tabelaDados">
+                <thead>
+                    <tr>
+                        <th>Matrícula</th>
+                        <th>Nome</th>
+                        <th>Data Adm. (Formatada)</th>
+                        <th>Data Troca (A ser enviada)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <button id="btnEnviar" onclick="gerarXMLEnviar()" disabled>Gerar XML e Enviar Agora</button>
+    </div>
+
+    <div class="row" style="margin-top:25px;">
+        <div>
+            <label>XML Gerado:</label>
+            <textarea id="xmlOutput" readonly></textarea>
+        </div>
+        <div>
+            <label>Resposta do Servidor:</label>
+            <textarea id="apiResponse" readonly>Aguardando envio...</textarea>
+        </div>
+    </div>
+</div>
+
+<script>
+    let dadosProcessados = [];
+    const PROXY = "https://cors-anywhere.herokuapp.com/";
+    const WS_URL = "https://www.ahgora.com.br/ws/pontoweb.php";
+
+    function alternarInputData() {
+        const chk = document.getElementById('chkUsaAdmissao');
+        const inputData = document.getElementById('dataElegibilidadeManual');
+        
+        if (chk.checked) {
+            inputData.disabled = true;
+            inputData.style.backgroundColor = "#e9ecef";
+        } else {
+            inputData.disabled = false;
+            inputData.style.backgroundColor = "#fff";
+        }
+        
+        if (dadosProcessados.length > 0) {
+            exibirTabela(dadosProcessados);
+        }
+    }
+
+    function lerCSV() {
+        const file = document.getElementById('csvFile').files[0];
+        if (!file) return;
+
+        Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            transformHeader: h => h.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, ""),
+            complete: function(results) {
+                processarDadosBrutos(results.data);
+            }
+        });
+    }
+
+    function processarDadosBrutos(rawData) {
+        dadosProcessados = [];
+        rawData.forEach(row => {
+            const matricula = row['matricula'] || "";
+            const pis = row['pis'] || "";
+            const nome = row['nome'] || "";
+            // Busca coluna normalizada "datadeadmissao"
+            const dataOriginal = row['datadeadmissao'] || row['dataadmissao'] || "";
+
+            if (!matricula) return;
+
+            const dataAdmissaoFormatada = formatarDataLimpa(dataOriginal);
+
+            dadosProcessados.push({
+                matricula,
+                pis,
+                nome,
+                dataAdmissaoXML: dataAdmissaoFormatada // Ex: 01052023
+            });
+        });
+        
+        exibirTabela(dadosProcessados);
+    }
+
+    function formatarDataLimpa(dataStr) {
+        if (!dataStr) return "";
+        let limpa = dataStr.trim();
+        if (limpa.match(/^\d{4}-\d{2}-\d{2}$/)) { // YYYY-MM-DD
+            const p = limpa.split('-');
+            return `${p[2]}${p[1]}${p[0]}`;
+        }
+        return limpa.replace(/[^0-9]/g, '');
+    }
+
+    function converterDDMMAAAAParaISO(strNumeros) {
+        if (!strNumeros || strNumeros.length !== 8) return "";
+        const dia = strNumeros.substring(0, 2);
+        const mes = strNumeros.substring(2, 4);
+        const ano = strNumeros.substring(4, 8);
+        return `${ano}-${mes}-${dia}`;
+    }
+
+    function exibirTabela(dados) {
+        const tbody = document.querySelector('#tabelaDados tbody');
+        tbody.innerHTML = "";
+        
+        const usarAdmissao = document.getElementById('chkUsaAdmissao').checked;
+        const dataManual = document.getElementById('dataElegibilidadeManual').value;
+
+        dados.forEach(f => {
+            let dataTrocaFinal = "";
+            
+            if (usarAdmissao) {
+                dataTrocaFinal = converterDDMMAAAAParaISO(f.dataAdmissaoXML);
+            } else {
+                dataTrocaFinal = dataManual;
+            }
+
+            const statusData = f.dataAdmissaoXML.length === 8 
+                ? `<span class="badge badge-ok">${f.dataAdmissaoXML}</span>` 
+                : `<span class="badge badge-err">Inválida</span>`;
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${f.matricula}</td>
+                    <td>${f.nome}</td>
+                    <td>${statusData}</td>
+                    <td>${dataTrocaFinal}</td>
+                </tr>
+            `;
+        });
+
+        document.getElementById('previewArea').style.display = 'block';
+        document.getElementById('btnEnviar').disabled = (dados.length === 0);
+        document.getElementById('btnEnviar').innerText = `Enviar ${dados.length} Funcionários`;
+    }
+
+    async function gerarXMLEnviar() {
+        const empresa = document.getElementById('empresaKey').value;
+        const batePonto = document.getElementById('batePonto').value;
+        const usarAdmissao = document.getElementById('chkUsaAdmissao').checked;
+        const dataManual = document.getElementById('dataElegibilidadeManual').value;
+        const btn = document.getElementById('btnEnviar');
+        const respArea = document.getElementById('apiResponse');
+
+        let funcionariosXML = "";
+        
+        dadosProcessados.forEach(f => {
+            let dataTroca = "";
+            if (usarAdmissao) {
+                dataTroca = converterDDMMAAAAParaISO(f.dataAdmissaoXML);
+            } else {
+                dataTroca = dataManual;
+            }
+
+            funcionariosXML += `
+        <funcionario>
+            <matricula xsi:type="xsd:string">${f.matricula}</matricula>
+            <pis xsi:type="xsd:string">${f.pis}</pis>
+            <nome xsi:type="xsd:string">${f.nome}</nome>
+            <dataAdmissao xsi:type="xsd:string">${f.dataAdmissaoXML}</dataAdmissao>
+            <bate_ponto xsi:type="xsd:string">${batePonto}</bate_ponto>
+            <data_troca_elegibilidade_ponto xsi:type="xsd:string">${dataTroca}</data_troca_elegibilidade_ponto>
+            <cargo xsi:type="xsd:string"></cargo>
+        </funcionario>`;
+        });
+
+        const xmlFinal = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="https://www.ahgora.com.br/ws" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ws:sincFuncionarios>
+         <empresa xsi:type="xsd:string">${empresa}</empresa>
+         <funcionarios>${funcionariosXML}
+         </funcionarios>
+      </ws:sincFuncionarios>
+   </soapenv:Body>
+</soapenv:Envelope>`;
+
+        document.getElementById('xmlOutput').value = xmlFinal;
+
+        btn.disabled = true;
+        btn.innerText = "Enviando...";
+        respArea.value = "Conectando ao Webservice...";
+
+        try {
+            const res = await fetch(PROXY + WS_URL, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'text/xml; charset=utf-8',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: xmlFinal
+            });
+            
+            if (res.status === 403) throw new Error("O Proxy expirou. Clique no link 'ATIVAR CORS ANYWHERE' no topo da página.");
+            const text = await res.text();
+            respArea.value = text;
+            
+            if(text.includes("<erros>")) alert("⚠️ A Ahgora processou, mas retornou erros. Verifique a caixa de resposta.");
+            else alert("✅ Envio realizado com sucesso!");
+
+        } catch (err) {
+            respArea.value = "Erro: " + err.message;
+            alert("Erro no envio: " + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Enviar Novamente";
+        }
+    }
+</script>
+
+</body>
+</html>

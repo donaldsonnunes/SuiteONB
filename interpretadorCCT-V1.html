@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interpretador de CCT - IA & RH</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // Configuração obrigatória do Worker do PDF.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+    <div class="bg-yellow-50 border-b border-yellow-200 p-3 sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
+            <div class="flex items-center w-full md:w-auto">
+                <i class="fa-solid fa-key text-yellow-600 mr-2"></i>
+                <span class="text-sm font-bold text-yellow-800 mr-2 whitespace-nowrap">API Key (Gemini):</span>
+                <input type="password" id="apiKeyInput" placeholder="Cole sua chave AI Studio aqui..." 
+                       class="text-sm p-2 border border-yellow-300 rounded focus:outline-none focus:border-yellow-600 w-full md:w-80 transition-colors">
+            </div>
+            <p class="text-xs text-yellow-700 hidden md:block">
+                <i class="fa-solid fa-lock"></i> Seus dados são processados localmente e enviados direto ao Google. Nada fica salvo neste servidor.
+            </p>
+        </div>
+    </div>
+
+    <header class="bg-white shadow-sm pt-10 pb-12">
+        <div class="max-w-4xl mx-auto text-center px-4">
+            <div class="inline-block p-3 bg-blue-100 rounded-full mb-4">
+                <i class="fa-solid fa-robot text-blue-600 text-3xl"></i>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">
+                Interpretador de Convenções Coletivas
+            </h1>
+            <p class="mt-3 text-gray-500 text-lg">
+                Transforme PDFs complexos em regras de ponto configuradas em segundos.
+            </p>
+
+            <div class="mt-8 max-w-xl mx-auto relative group">
+                <label for="fileInput" class="flex flex-col items-center justify-center w-full h-40 px-4 transition bg-white border-2 border-dashed border-gray-300 rounded-xl appearance-none cursor-pointer hover:border-blue-500 hover:bg-blue-50">
+                    <span class="flex flex-col items-center space-y-2">
+                        <i class="fa-solid fa-cloud-arrow-up text-gray-400 text-3xl group-hover:text-blue-500 transition-colors"></i>
+                        <span class="font-medium text-gray-600" id="file-label">
+                            Clique ou arraste o PDF da CCT aqui
+                        </span>
+                        <span class="text-xs text-gray-400">PDFs pesquisáveis (com texto selecionável)</span>
+                    </span>
+                    <input type="file" id="fileInput" accept="application/pdf" class="hidden">
+                </label>
+            </div>
+
+            <button id="btnProcessar" onclick="iniciarProcessamento()" class="mt-6 w-full max-w-xl shadow-lg transform transition hover:-translate-y-0.5 inline-flex justify-center items-center px-6 py-4 border border-transparent text-base font-bold rounded-full text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Extrair Regras com IA
+            </button>
+
+            <div id="error-message" class="hidden mt-6 p-4 bg-red-50 rounded-lg border border-red-200 flex items-start text-left max-w-xl mx-auto animate-pulse">
+                <i class="fa-solid fa-circle-xmark text-red-500 mt-0.5 mr-3"></i>
+                <span class="text-sm text-red-700 font-medium" id="error-text">Mensagem de erro aqui.</span>
+            </div>
+        </div>
+    </header>
+
+    <div id="loading" class="hidden fixed inset-0 bg-gray-900/90 z-50 flex flex-col items-center justify-center text-white backdrop-blur-sm">
+        <div class="relative">
+            <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <i class="fa-solid fa-brain absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-500 text-xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold mt-6" id="loading-title">Processando...</h2>
+        <p class="text-gray-300 mt-2 text-sm" id="loading-subtitle">Aguarde um momento</p>
+    </div>
+
+    <main id="main-content" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Resultados da Análise</h2>
+            <button onclick="location.reload()" class="text-sm text-gray-500 hover:text-blue-600 underline">Nova Análise</button>
+        </div>
+
+        <div id="results-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 align-start">
+            </div>
+
+        <div class="mt-10 border-t pt-8 text-center">
+            <p class="text-gray-500 text-sm mb-4">Verifique os dados acima. A IA pode cometer erros em documentos complexos.</p>
+            <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow transition">
+                <i class="fa-solid fa-check-double mr-2"></i> Aprovar e Importar Parâmetros
+            </button>
+        </div>
+    </main>
+
+    <script>
+        // --- VARIÁVEIS GLOBAIS ---
+        const fileInput = document.getElementById('fileInput');
+        const fileLabel = document.getElementById('file-label');
+        const btnProcessar = document.getElementById('btnProcessar');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const loadingDiv = document.getElementById('loading');
+        const loadingTitle = document.getElementById('loading-title');
+        const loadingSubtitle = document.getElementById('loading-subtitle');
+        const errorDiv = document.getElementById('error-message');
+        const errorText = document.getElementById('error-text');
+        const resultsContainer = document.getElementById('results-container');
+        const mainContent = document.getElementById('main-content');
+
+        let selectedFile = null;
+
+        // Palavras-chave para filtrar páginas inúteis (seguro vida, odontológico, etc)
+        // Isso economiza tokens e dinheiro.
+        const PALAVRAS_CHAVE = [
+            "jornada", "hora extra", "horas extras", "banco de horas", 
+            "compensação", "intervalo", "noturno", "descanso", "frequência",
+            "ponto", "sobreaviso", "adicional", "domingos", "feriados", "escala"
+        ];
+
+        // --- EVENTOS ---
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                selectedFile = e.target.files[0];
+                fileLabel.innerHTML = `<span class="text-blue-600 font-bold">${selectedFile.name}</span>`;
+                errorDiv.classList.add('hidden');
+            }
+        });
+
+        // --- FUNÇÃO PRINCIPAL (ORQUESTRADOR) ---
+        async function iniciarProcessamento() {
+            const apiKey = apiKeyInput.value.trim();
+            
+            // 1. Validações
+            if (!apiKey) return showError("Por favor, insira sua API Key do Gemini no topo da página.");
+            if (!selectedFile) return showError("Selecione um arquivo PDF para continuar.");
+
+            try {
+                // 2. UI Loading
+                showLoading("Lendo PDF...", "Filtrando páginas relevantes (Jornada, Ponto, Horas Extras)");
+                errorDiv.classList.add('hidden');
+                mainContent.classList.add('hidden');
+
+                // 3. Extração Inteligente (Front-end)
+                const pdfData = await extractRelevantText(selectedFile);
+                
+                console.log(`Páginas Totais: ${pdfData.totalPages} | Páginas Úteis: ${pdfData.pagesKept}`);
+                
+                if (pdfData.text.length < 50) {
+                    throw new Error("Não encontramos regras de ponto no documento. Verifique se o PDF é pesquisável (OCR) ou se contém termos como 'Jornada' e 'Horas Extras'.");
+                }
+
+                // 4. Inteligência Artificial (Chamada API)
+                showLoading("Consultando IA...", "Interpretando cláusulas complexas e gerando JSON...");
+                const jsonResult = await callGeminiAPI(apiKey, pdfData.text);
+
+                // 5. Renderização
+                renderizarResultados(jsonResult);
+                showLoading(false); // Esconde loading
+
+            } catch (err) {
+                console.error(err);
+                showError(err.message || "Erro desconhecido ao processar.");
+                showLoading(false);
+            }
+        }
+
+        // --- MOTOR 1: EXTRAÇÃO DE PDF (PDF.js) ---
+        async function extractRelevantText(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            
+            let relevantText = '';
+            let pagesKept = 0;
+
+            for (let i = 1; i <= pdf.numPages; i++) {
+                // Atualiza UI a cada página para não parecer travado
+                loadingSubtitle.innerText = `Analisando página ${i} de ${pdf.numPages}...`;
+                
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                const pageTextRaw = textContent.items.map(item => item.str).join(' ');
+                
+                // Filtro: Só guarda se tiver palavras-chave
+                const pageTextLower = pageTextRaw.toLowerCase();
+                if (PALAVRAS_CHAVE.some(key => pageTextLower.includes(key))) {
+                    relevantText += `--- PÁGINA ${i} ---\n${pageTextRaw}\n\n`;
+                    pagesKept++;
+                }
+            }
+
+            return { text: relevantText, totalPages: pdf.numPages, pagesKept: pagesKept };
+        }
+
+        // --- MOTOR 2: INTELIGÊNCIA ARTIFICIAL (Gemini API) ---
+        async function callGeminiAPI(apiKey, textContext) {
+            // Modelo Flash é mais rápido e barato/gratuito
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+            const systemPrompt = `
+            Você é um especialista em Departamento Pessoal e Parser JSON.
+            Analise o texto desta CCT (Convenção Coletiva) e extraia regras de ponto.
+            
+            REGRAS DE SAÍDA:
+            1. Retorne APENAS um JSON válido. Sem markdown.
+            2. Se houver horas extras progressivas (ex: primeiras 2h a 50%, resto 100%), crie múltiplos itens em 'faixas_he'.
+            3. Use 'null' se não encontrar a informação.
+            
+            SCHEMA JSON ESPERADO:
+            {
+                "metadados": { "vigencia_inicio": "YYYY-MM-DD", "vigencia_fim": "YYYY-MM-DD", "sindicato": "Nome aproximado" },
+                "regras_jornada": [
+                    { 
+                        "tipo_dia": "String (ex: Dias Úteis, Sábados, Domingos)", 
+                        "faixas_he": [
+                            { "percentual": Number, "limite_horas": Number (ou null), "descricao": "String" }
+                        ] 
+                    }
+                ],
+                "adicional_noturno": { "percentual": Number, "horario_inicio": "HH:MM", "horario_fim": "HH:MM" },
+                "banco_de_horas": { "permitido": Boolean, "detalhes": "String curta" },
+                "alerta_ia": "String com avisos de ambiguidade ou null"
+            }
+            `;
+
+            // Corta o texto se for muito grande (segurança extra)
+            const safeText = textContext.substring(0, 35000); 
+
+            const body = {
+                contents: [{
+                    parts: [
+                        { text: systemPrompt },
+                        { text: `DOCUMENTO:\n${safeText}` }
+                    ]
+                }],
+                generationConfig: { response_mime_type: "application/json" }
+            };
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(`Erro Gemini: ${err.error?.message || response.statusText}`);
+            }
+
+            const data = await response.json();
+            const rawJson = data.candidates[0].content.parts[0].text;
+            
+            // Limpa markdown caso a IA coloque ```json ... ```
+            return JSON.parse(rawJson.replace(/```json/g, '').replace(/```/g, '').trim());
+        }
+
+        // --- MOTOR 3: RENDERIZAÇÃO (UI Cards) ---
+        function renderizarResultados(data) {
+            resultsContainer.innerHTML = '';
+            mainContent.classList.remove('hidden');
+
+            // 1. Card de Metadados
+            const vigencia = `
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
+                <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                    <h3 class="font-bold text-gray-700"><i class="fa-solid fa-file-contract mr-2 text-blue-500"></i>Contrato</h3>
+                    <span class="text-xs font-mono text-gray-400 bg-white px-2 py-1 rounded border">METADATA</span>
+                </div>
+                <div class="p-6">
+                    <p class="text-sm text-gray-500">Sindicato/Entidade</p>
+                    <p class="font-semibold text-gray-800 mb-4">${data.metadados?.sindicato || 'Não identificado'}</p>
+                    
+                    <div class="flex justify-between items-center bg-blue-50 p-3 rounded-lg">
+                        <div>
+                            <p class="text-xs text-blue-600 font-bold uppercase">Início</p>
+                            <p class="font-mono font-bold text-blue-800">${formatDate(data.metadados?.vigencia_inicio)}</p>
+                        </div>
+                        <i class="fa-solid fa-arrow-right text-blue-300"></i>
+                        <div class="text-right">
+                            <p class="text-xs text-blue-600 font-bold uppercase">Fim</p>
+                            <p class="font-mono font-bold text-blue-800">${formatDate(data.metadados?.vigencia_fim)}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+            resultsContainer.insertAdjacentHTML('beforeend', vigencia);
+
+            // 2. Cards de Jornada (Loop)
+            if (data.regras_jornada) {
+                data.regras_jornada.forEach(regra => {
+                    let faixasHtml = regra.faixas_he.map((f, idx) => `
+                        <div class="flex items-center justify-between py-2 border-b border-dashed border-gray-200 last:border-0">
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs font-bold mr-3">${idx + 1}</span>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700">${f.descricao || 'Faixa de Hora Extra'}</p>
+                                    <p class="text-xs text-gray-400">${f.limite_horas ? 'Até ' + f.limite_horas + ' horas' : 'Sem limite'}</p>
+                                </div>
+                            </div>
+                            <span class="text-lg font-bold text-green-600">${f.percentual}%</span>
+                        </div>
+                    `).join('');
+
+                    let card = `
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
+                        <div class="bg-green-50 px-6 py-4 border-b border-green-100 flex items-center">
+                            <div class="bg-white p-2 rounded-lg shadow-sm mr-3">
+                                <i class="fa-solid fa-clock text-green-500"></i>
+                            </div>
+                            <h3 class="font-bold text-green-900">${regra.tipo_dia}</h3>
+                        </div>
+                        <div class="p-6">
+                            ${faixasHtml}
+                        </div>
+                    </div>`;
+                    resultsContainer.insertAdjacentHTML('beforeend', card);
+                });
+            }
+
+            // 3. Card Adicional Noturno
+            if (data.adicional_noturno) {
+                let an = data.adicional_noturno;
+                let card = `
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
+                    <div class="bg-indigo-50 px-6 py-4 border-b border-indigo-100 flex items-center">
+                        <div class="bg-white p-2 rounded-lg shadow-sm mr-3">
+                            <i class="fa-solid fa-moon text-indigo-500"></i>
+                        </div>
+                        <h3 class="font-bold text-indigo-900">Adicional Noturno</h3>
+                    </div>
+                    <div class="p-6 flex flex-col h-full justify-center">
+                         <div class="flex items-end justify-between mb-4">
+                            <span class="text-gray-500 text-sm">Percentual</span>
+                            <span class="text-4xl font-bold text-indigo-600">${an.percentual}%</span>
+                         </div>
+                         <div class="bg-indigo-50 rounded p-3 flex justify-between items-center">
+                            <span class="text-indigo-800 font-mono text-sm">${an.horario_inicio}</span>
+                            <span class="text-indigo-300 text-xs">até</span>
+                            <span class="text-indigo-800 font-mono text-sm">${an.horario_fim}</span>
+                         </div>
+                    </div>
+                </div>`;
+                resultsContainer.insertAdjacentHTML('beforeend', card);
+            }
+
+            // 4. Banco de Horas & Alertas (Condicional)
+            if (data.banco_de_horas || data.alerta_ia) {
+                let alertaCor = data.alerta_ia ? 'yellow' : 'gray';
+                let html = `
+                <div class="bg-white rounded-xl shadow-sm border border-${alertaCor}-200 overflow-hidden md:col-span-2 xl:col-span-3">
+                    <div class="p-6 flex flex-col md:flex-row gap-6">
+                        ${data.banco_de_horas ? `
+                        <div class="flex-1">
+                            <h4 class="font-bold text-gray-800 mb-2"><i class="fa-solid fa-business-time text-gray-400 mr-2"></i>Banco de Horas</h4>
+                            <p class="text-sm text-gray-600 bg-gray-50 p-3 rounded border border-gray-200">
+                                <strong class="${data.banco_de_horas.permitido ? 'text-green-600' : 'text-red-600'}">
+                                    ${data.banco_de_horas.permitido ? 'PERMITIDO' : 'PROIBIDO'}
+                                </strong> - ${data.banco_de_horas.detalhes}
+                            </p>
+                        </div>` : ''}
+                        
+                        ${data.alerta_ia ? `
+                        <div class="flex-1 border-l-4 border-yellow-400 pl-4 bg-yellow-50 py-2 rounded-r">
+                            <h4 class="font-bold text-yellow-800 mb-1"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Atenção da IA</h4>
+                            <p class="text-sm text-yellow-800 italic">"${data.alerta_ia}"</p>
+                        </div>` : ''}
+                    </div>
+                </div>`;
+                resultsContainer.insertAdjacentHTML('beforeend', html);
+            }
+        }
+
+        // --- HELPERS ---
+        function showError(msg) {
+            errorText.innerText = msg;
+            errorDiv.classList.remove('hidden');
+            loadingDiv.classList.add('hidden');
+        }
+
+        function showLoading(title, subtitle) {
+            if (title) {
+                loadingTitle.innerText = title;
+                loadingSubtitle.innerText = subtitle || "";
+                loadingDiv.classList.remove('hidden');
+            } else {
+                loadingDiv.classList.add('hidden');
+            }
+        }
+
+        function formatDate(isoStr) {
+            if (!isoStr) return "--/--/----";
+            try { const [a, m, d] = isoStr.split('-'); return `${d}/${m}/${a}`; } catch (e) { return isoStr; }
+        }
+
+    </script>
+</body>
+</html>

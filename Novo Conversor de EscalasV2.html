@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Conversor de Escalas V69 - Painel 4 Chaves</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .key-input { font-family: monospace; font-size: 10px; }
+        .active-key { border-color: #10b981 !important; background-color: #064e3b !important; }
+        .scroll-custom::-webkit-scrollbar { width: 6px; }
+        .scroll-custom::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    </style>
+</head>
+<body class="p-6">
+
+    <div class="max-w-[1600px] mx-auto grid lg:grid-cols-4 gap-6">
+        <aside class="lg:col-span-1">
+            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-2xl sticky top-6 space-y-5">
+                
+                <div>
+                    <h2 class="text-[10px] font-black text-emerald-400 uppercase border-b border-slate-700 pb-2 mb-3 italic tracking-widest">Pool de 4 API Keys</h2>
+                    <div id="keyPool" class="grid grid-cols-1 gap-2">
+                        <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 01 (Obrigatória)">
+                        <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 02">
+                        <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 03">
+                        <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 04">
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-700">
+                    <label class="block text-[10px] font-black text-blue-300 uppercase mb-1">Ponto de Partida:</label>
+                    <input type="number" id="startRow" value="1" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-white font-bold text-lg">
+                    <p class="text-[9px] text-slate-400 mt-1 italic">Para retomar, digite o número da próxima linha.</p>
+                </div>
+
+                <div class="pt-3 border-t border-slate-700">
+                    <h2 class="text-[10px] font-black text-blue-400 uppercase italic mb-3">Escala (Nível 1)</h2>
+                    <div class="grid grid-cols-2 gap-2">
+                        <select id="flagTipoEscala" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px] font-bold">
+                            <option value="SEMANAL">SEMANAL</option>
+                            <option value="MENSAL">MENSAL</option>
+                        </select>
+                        <input type="text" id="flagCarga" value="44" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px]" placeholder="Carga">
+                    </div>
+                    <div class="flex items-center gap-2 mt-2">
+                        <input type="checkbox" id="flagForcarDSR" checked class="w-3 h-3 rounded border-slate-700 bg-slate-900">
+                        <label for="flagForcarDSR" class="text-[9px] font-bold text-slate-400">DSR no Domingo se 7x0</label>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-700">
+                    <h2 class="text-[10px] font-black text-purple-400 uppercase italic mb-3">Jornada (Nível 2)</h2>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-2 items-center">
+                            <label class="text-[9px] text-slate-500 font-bold uppercase">Pares?</label>
+                            <select id="flagBatidasPares" class="w-full p-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px]">
+                                <option value="false">Não</option>
+                                <option value="true">Sim</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[9px] text-slate-500 font-bold uppercase mb-1 block">Batida Automática</label>
+                            <input type="text" id="flagBatidaAuto" placeholder="Ex: 12:00, 13:00" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px] font-mono">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="lg:col-span-3 space-y-6">
+            <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-2xl text-center">
+                <div id="uploadArea" class="border-2 border-dashed border-slate-600 rounded-2xl p-16 hover:border-emerald-500 hover:bg-slate-700/50 cursor-pointer group transition-all">
+                    <input type="file" id="csvFile" accept=".csv" class="hidden">
+                    <div class="text-slate-300 font-black text-3xl uppercase italic group-hover:text-emerald-400 transition-colors">Selecione o CSV</div>
+                    <p id="fileNameDisplay" class="text-sm text-blue-400 font-bold mt-4"></p>
+                </div>
+
+                <div id="progressSection" class="hidden mt-8 space-y-4 text-left">
+                    <div class="flex justify-between items-end">
+                        <div class="space-y-1">
+                            <span id="statusText" class="text-sm font-bold text-emerald-400 uppercase animate-pulse italic">Aguardando Pool...</span>
+                            <button id="stopBtn" class="block text-[10px] mt-2 bg-red-600 text-white font-bold px-4 py-2 rounded hover:bg-red-700 uppercase">Parar e Baixar Progresso</button>
+                        </div>
+                        <span id="percentDisplay" class="text-5xl font-black text-white">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-900 h-8 rounded-full border border-slate-700 p-1 relative overflow-hidden">
+                        <div id="progressBar" class="bg-gradient-to-r from-blue-600 via-emerald-500 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-black/50 rounded-2xl p-6 border border-slate-800 shadow-inner">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
+                    <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] italic">Log de Transações</h3>
+                    <span id="totalCounter" class="text-blue-500 font-black font-mono text-sm">0 / 0</span>
+                </div>
+                <div id="logArea" class="h-56 overflow-y-auto space-y-1 text-[10px] font-mono text-slate-400 italic scroll-custom"></div>
+            </div>
+
+            <div id="downloadSection" class="hidden flex justify-center pb-12">
+                <button id="downloadBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-24 py-8 rounded-full font-black uppercase text-xl shadow-[0_0_30px_rgba(16,185,129,0.3)] transform hover:scale-105 transition-all">
+                    Baixar JSON Estruturado
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let isStopped = false;
+        let currentKeyIndex = 0;
+        let finalEscalas = [];
+        let finalJornadas = {};
+        let jorMap = {};
+        
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+        function generateKey() { return Array.from({length: 24}, () => '0123456789abcdef'[Math.floor(Math.random()*16)]).join(''); }
+        function toHHMM(t) { return t.replace(/[^0-9]/g, '').padStart(4, '0'); }
+
+        function getKeys() {
+            const inputs = document.querySelectorAll('.key-input');
+            return Array.from(inputs).map(i => i.value.trim()).filter(v => v !== "");
+        }
+
+        function highlightKey(index) {
+            const inputs = document.querySelectorAll('.key-input');
+            inputs.forEach((input, i) => {
+                if (i === index) input.classList.add('active-key');
+                else input.classList.remove('active-key');
+            });
+        }
+
+        function addLog(msg, isError = false) {
+            const area = document.getElementById('logArea');
+            area.innerHTML += `<div class="${isError ? 'text-red-400 font-bold' : ''}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+            area.scrollTop = area.scrollHeight;
+        }
+
+        async function callGemini(descriptions) {
+            const keys = getKeys();
+            if (keys.length === 0) { addLog("ERRO: Cole ao menos uma API Key!", true); return null; }
+
+            let attempts = 0;
+            while (attempts < keys.length) {
+                const apiKey = keys[currentKeyIndex];
+                highlightKey(currentKeyIndex);
+                
+                const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-goog-api-key': apiKey },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: `Return JSON ARRAY. Each object: SEG, TER, QUA, QUI, SEX, SAB, DOM. Values: ["HH:MM", "HH:MM"] or "LIVRE". Input: ${descriptions.join(' | ')}` }] }],
+                            generationConfig: { responseMimeType: "application/json", temperature: 0.1 }
+                        })
+                    });
+
+                    if (response.status === 429) {
+                        addLog(`CHAVE ${currentKeyIndex + 1} ESGOTADA. Rotacionando...`, true);
+                        currentKeyIndex = (currentKeyIndex + 1) % keys.length;
+                        attempts++; continue;
+                    }
+
+                    if (!response.ok) {
+                        const err = await response.json();
+                        addLog(`ERRO CHAVE ${currentKeyIndex + 1}: ${err.error?.message}`, true);
+                        currentKeyIndex = (currentKeyIndex + 1) % keys.length;
+                        attempts++; continue;
+                    }
+
+                    const data = await response.json();
+                    return JSON.parse(data.candidates[0].content.parts[0].text);
+                } catch (e) {
+                    addLog(`FALHA NA CHAVE ${currentKeyIndex + 1}.`, true);
+                    currentKeyIndex = (currentKeyIndex + 1) % keys.length;
+                    attempts++;
+                }
+            }
+            return "PAUSE_ALL";
+        }
+
+        document.getElementById('uploadArea').onclick = () => document.getElementById('csvFile').click();
+        document.getElementById('stopBtn').onclick = () => { if(confirm("Deseja baixar o progresso atual?")) { isStopped = true; finish(); } };
+
+        function finish() {
+            finalJornadas["ID_FOLGA"] = { "NOME_JORNADA": "FOLGA", "id": "ID_FOLGA", "key": "ID_FOLGA" };
+            finalJornadas["ID_DSR"] = { "NOME_JORNADA": "DSR", "FL_DSR": "1", "id": "ID_DSR", "key": "ID_DSR" };
+            const blob = new Blob([JSON.stringify({ escalas: finalEscalas, jornadas: finalJornadas }, null, 4)], { type: 'application/json' });
+            document.getElementById('downloadSection').classList.remove('hidden');
+            document.getElementById('downloadBtn').onclick = () => {
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+                a.download = `importacao_finalizada.json`; a.click();
+            };
+        }
+
+        document.getElementById('csvFile').addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            document.getElementById('fileNameDisplay').textContent = file.name;
+            const startAt = parseInt(document.getElementById('startRow').value) - 1;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const allRows = e.target.result.split('\n').filter(l => l.trim() !== '').slice(1);
+                const rowsParaProcessar = allRows.slice(startAt);
+                document.getElementById('progressSection').classList.remove('hidden');
+                
+                const conf = {
+                    tipo: document.getElementById('flagTipoEscala').value,
+                    carga: document.getElementById('flagCarga').value,
+                    dsr: document.getElementById('flagForcarDSR').checked,
+                    pares: document.getElementById('flagBatidasPares').value === 'true',
+                    auto: document.getElementById('flagBatidaAuto').value ? document.getElementById('flagBatidaAuto').value.split(',').map(t => toHHMM(t.trim())) : []
+                };
+
+                addLog(`INICIANDO: Puladas ${startAt} escalas. Processando ${rowsParaProcessar.length} restantes.`);
+
+                const batchSize = 40; 
+                for (let i = 0; i < rowsParaProcessar.length && !isStopped; i += batchSize) {
+                    const batchRaw = rowsParaProcessar.slice(i, i + batchSize);
+                    document.getElementById('statusText').textContent = "Consultando Pool...";
+                    
+                    let aiResults = await callGemini(batchRaw.map(r => r.split(',')[2] || ""));
+                    
+                    if (aiResults === "PAUSE_ALL") {
+                        document.getElementById('statusText').textContent = "POOL ESGOTADO";
+                        addLog("Aguardando 60s para reset parcial...", true);
+                        await delay(60000); i -= batchSize; continue;
+                    }
+
+                    if (aiResults) {
+                        aiResults.forEach((res, idx) => {
+                            if (!batchRaw[idx]) return;
+                            const original = batchRaw[idx].split(',');
+                            const diasID = [], dias = ['SEG','TER','QUA','QUI','SEX','SAB','DOM'];
+                            
+                            if (conf.dsr && !dias.some(d => res[d] === "LIVRE")) res['DOM'] = "LIVRE";
+                            const livres = dias.filter(d => res[d] === "LIVRE");
+
+                            dias.forEach(dia => {
+                                const val = res[dia];
+                                if (val === "LIVRE") {
+                                    if (livres.length === 1) diasID.push("ID_DSR");
+                                    else if (livres.length === 2) diasID.push(dia === livres[1] ? "ID_DSR" : "ID_FOLGA");
+                                    else diasID.push(dia === livres[livres.length-1] ? "ID_DSR" : "ID_FOLGA");
+                                } else if (Array.isArray(val)) {
+                                    const h = JSON.stringify(val);
+                                    if (!jorMap[h]) {
+                                        const k = generateKey(); jorMap[h] = k;
+                                        finalJornadas[k] = { 
+                                            "NOME_JORNADA": val.join(' | '), "HORAS_CONTRATUAIS": val, 
+                                            "PREASSINALA_SOMENTE_BATIDAS_PARES": conf.pares,
+                                            "batida_automatica": conf.auto,
+                                            "id": k, "key": k 
+                                        };
+                                    }
+                                    diasID.push(jorMap[h]);
+                                }
+                            });
+                            finalEscalas.push({ "NOME": original[1], "COD": original[0], "carga_horaria": conf.carga, "TIPO": conf.tipo, "JORNADAS": diasID, "key": generateKey() });
+                        });
+                        
+                        const progressoReal = startAt + finalEscalas.length;
+                        const percent = Math.min(Math.round((progressoReal / allRows.length) * 100), 100);
+                        document.getElementById('progressBar').style.width = percent + "%";
+                        document.getElementById('percentDisplay').textContent = percent + "%";
+                        document.getElementById('totalCounter').textContent = progressoReal + " / " + allRows.length;
+                        addLog(`Lote processado. Total global: ${progressoReal}`);
+                    }
+                    await delay(12000);
+                }
+                if(!isStopped) finish();
+            };
+            reader.readAsText(file);
+        });
+    </script>
+</body>
+</html>
