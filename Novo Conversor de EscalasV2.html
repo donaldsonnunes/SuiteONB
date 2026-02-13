@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Conversor de Escalas V69 - Painel 4 Chaves</title>
+    <title>Conversor de Escalas V70 - Guia Integrado</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
@@ -13,16 +13,16 @@
         .scroll-custom::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
-<body class="p-6">
+<body class="p-4">
 
-    <div class="max-w-[1600px] mx-auto grid lg:grid-cols-4 gap-6">
-        <aside class="lg:col-span-1">
-            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-2xl sticky top-6 space-y-5">
-                
+    <div class="max-w-[1800px] mx-auto grid lg:grid-cols-5 gap-6">
+        
+        <aside class="lg:col-span-1 space-y-4">
+            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-2xl sticky top-4 space-y-5">
                 <div>
                     <h2 class="text-[10px] font-black text-emerald-400 uppercase border-b border-slate-700 pb-2 mb-3 italic tracking-widest">Pool de 4 API Keys</h2>
-                    <div id="keyPool" class="grid grid-cols-1 gap-2">
-                        <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 01 (Obrigatória)">
+                    <div id="keyPool" class="space-y-2">
+                        <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 01">
                         <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 02">
                         <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 03">
                         <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 04">
@@ -32,39 +32,24 @@
                 <div class="pt-3 border-t border-slate-700">
                     <label class="block text-[10px] font-black text-blue-300 uppercase mb-1">Ponto de Partida:</label>
                     <input type="number" id="startRow" value="1" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-white font-bold text-lg">
-                    <p class="text-[9px] text-slate-400 mt-1 italic">Para retomar, digite o número da próxima linha.</p>
                 </div>
 
-                <div class="pt-3 border-t border-slate-700">
-                    <h2 class="text-[10px] font-black text-blue-400 uppercase italic mb-3">Escala (Nível 1)</h2>
-                    <div class="grid grid-cols-2 gap-2">
-                        <select id="flagTipoEscala" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px] font-bold">
-                            <option value="SEMANAL">SEMANAL</option>
-                            <option value="MENSAL">MENSAL</option>
-                        </select>
-                        <input type="text" id="flagCarga" value="44" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px]" placeholder="Carga">
-                    </div>
-                    <div class="flex items-center gap-2 mt-2">
-                        <input type="checkbox" id="flagForcarDSR" checked class="w-3 h-3 rounded border-slate-700 bg-slate-900">
-                        <label for="flagForcarDSR" class="text-[9px] font-bold text-slate-400">DSR no Domingo se 7x0</label>
+                <div class="pt-3 border-t border-slate-700 space-y-3">
+                    <h2 class="text-[10px] font-black text-blue-400 uppercase italic">Tags de Escala</h2>
+                    <input type="text" id="flagCarga" value="44" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs">
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="flagForcarDSR" checked class="w-3 h-3 bg-slate-900 border-slate-700">
+                        <label for="flagForcarDSR" class="text-[9px] font-bold text-slate-400">DSR no Domingo</label>
                     </div>
                 </div>
 
-                <div class="pt-3 border-t border-slate-700">
-                    <h2 class="text-[10px] font-black text-purple-400 uppercase italic mb-3">Jornada (Nível 2)</h2>
-                    <div class="space-y-3">
-                        <div class="grid grid-cols-2 gap-2 items-center">
-                            <label class="text-[9px] text-slate-500 font-bold uppercase">Pares?</label>
-                            <select id="flagBatidasPares" class="w-full p-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px]">
-                                <option value="false">Não</option>
-                                <option value="true">Sim</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[9px] text-slate-500 font-bold uppercase mb-1 block">Batida Automática</label>
-                            <input type="text" id="flagBatidaAuto" placeholder="Ex: 12:00, 13:00" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px] font-mono">
-                        </div>
-                    </div>
+                <div class="pt-3 border-t border-slate-700 space-y-3">
+                    <h2 class="text-[10px] font-black text-purple-400 uppercase italic">Tags de Jornada</h2>
+                    <select id="flagBatidasPares" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px]">
+                        <option value="false">Batidas Pares: Não</option>
+                        <option value="true">Batidas Pares: Sim</option>
+                    </select>
+                    <input type="text" id="flagBatidaAuto" placeholder="Auto: 12:00, 13:00" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px]">
                 </div>
             </div>
         </aside>
@@ -80,8 +65,8 @@
                 <div id="progressSection" class="hidden mt-8 space-y-4 text-left">
                     <div class="flex justify-between items-end">
                         <div class="space-y-1">
-                            <span id="statusText" class="text-sm font-bold text-emerald-400 uppercase animate-pulse italic">Aguardando Pool...</span>
-                            <button id="stopBtn" class="block text-[10px] mt-2 bg-red-600 text-white font-bold px-4 py-2 rounded hover:bg-red-700 uppercase">Parar e Baixar Progresso</button>
+                            <span id="statusText" class="text-sm font-bold text-emerald-400 uppercase animate-pulse italic">Processando...</span>
+                            <button id="stopBtn" class="block text-[10px] mt-2 bg-red-600 text-white font-bold px-4 py-2 rounded hover:bg-red-700 uppercase">Parar e Baixar</button>
                         </div>
                         <span id="percentDisplay" class="text-5xl font-black text-white">0%</span>
                     </div>
@@ -93,18 +78,42 @@
 
             <div class="bg-black/50 rounded-2xl p-6 border border-slate-800 shadow-inner">
                 <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
-                    <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] italic">Log de Transações</h3>
+                    <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] italic">Monitor de Transação</h3>
                     <span id="totalCounter" class="text-blue-500 font-black font-mono text-sm">0 / 0</span>
                 </div>
-                <div id="logArea" class="h-56 overflow-y-auto space-y-1 text-[10px] font-mono text-slate-400 italic scroll-custom"></div>
+                <div id="logArea" class="h-64 overflow-y-auto space-y-1 text-[10px] font-mono text-slate-400 italic scroll-custom"></div>
             </div>
 
             <div id="downloadSection" class="hidden flex justify-center pb-12">
-                <button id="downloadBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-24 py-8 rounded-full font-black uppercase text-xl shadow-[0_0_30px_rgba(16,185,129,0.3)] transform hover:scale-105 transition-all">
-                    Baixar JSON Estruturado
+                <button id="downloadBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-24 py-8 rounded-full font-black uppercase text-xl shadow-2xl transition-all">
+                    Baixar JSON Final
                 </button>
             </div>
         </main>
+
+        <aside class="lg:col-span-1">
+            <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 shadow-2xl sticky top-4 space-y-6">
+                <h2 class="text-xs font-black text-blue-400 uppercase border-b border-slate-800 pb-2 italic tracking-widest">Guia de Utilização</h2>
+                
+                <div class="space-y-4 text-[11px] leading-relaxed text-slate-400">
+                    <p class="font-bold text-slate-200">1) Como gerar as chaves:</p>
+                    <p>Para gerar chave só conseguirá utilizando uma conta privada. Para isso, acesse <a href="https://aistudio.google.com/api-keys" target="_blank" class="text-blue-400 underline hover:text-blue-300">Google AI Studio</a> logado em sua conta privada, crie 4 projetos com 4 chaves diferentes.</p>
+                    <p>Copie e cole cada chave nos respectivos campos no pool à esquerda.</p>
+
+                    <p class="font-bold text-slate-200 pt-2">2) Por que 4 chaves?</p>
+                    <p>Ao usar a conta gratuita, existe um limite de 20 chamadas diárias para cada chave.</p>
+                    <p>Cada envio processa 40 escalas. Com 4 chaves, você consegue processar até 3.200 escalas por dia (800 por chave).</p>
+
+                    <p class="font-bold text-slate-200 pt-2">3) E se eu precisar de mais?</p>
+                    <p>Caso necessite mais que isso, você pode adicionar chaves extras ou continuar a geração no dia seguinte usando o recurso de <span class="text-blue-300 font-bold uppercase">"Ponto de Partida"</span> informando a próxima linha para reiniciar.</p>
+                </div>
+                
+                <div class="bg-amber-900/20 p-4 rounded border border-amber-700/30">
+                    <p class="text-[10px] text-amber-200 font-bold uppercase mb-1">Dica de RH:</p>
+                    <p class="text-[10px] text-amber-400 italic italic leading-tight">O JSON gerado separa as configurações de Escala (Nível 1) e Jornada (Nível 2) automaticamente.</p>
+                </div>
+            </div>
+        </aside>
     </div>
 
     <script>
@@ -118,14 +127,9 @@
         function generateKey() { return Array.from({length: 24}, () => '0123456789abcdef'[Math.floor(Math.random()*16)]).join(''); }
         function toHHMM(t) { return t.replace(/[^0-9]/g, '').padStart(4, '0'); }
 
-        function getKeys() {
-            const inputs = document.querySelectorAll('.key-input');
-            return Array.from(inputs).map(i => i.value.trim()).filter(v => v !== "");
-        }
-
+        function getKeys() { return Array.from(document.querySelectorAll('.key-input')).map(i => i.value.trim()).filter(v => v !== ""); }
         function highlightKey(index) {
-            const inputs = document.querySelectorAll('.key-input');
-            inputs.forEach((input, i) => {
+            document.querySelectorAll('.key-input').forEach((input, i) => {
                 if (i === index) input.classList.add('active-key');
                 else input.classList.remove('active-key');
             });
@@ -139,14 +143,14 @@
 
         async function callGemini(descriptions) {
             const keys = getKeys();
-            if (keys.length === 0) { addLog("ERRO: Cole ao menos uma API Key!", true); return null; }
+            if (keys.length === 0) { addLog("ERRO: Cole as chaves no pool à esquerda!", true); return null; }
 
             let attempts = 0;
             while (attempts < keys.length) {
                 const apiKey = keys[currentKeyIndex];
                 highlightKey(currentKeyIndex);
                 
-                const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+                const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
@@ -158,14 +162,12 @@
                     });
 
                     if (response.status === 429) {
-                        addLog(`CHAVE ${currentKeyIndex + 1} ESGOTADA. Rotacionando...`, true);
+                        addLog(`CHAVE ${currentKeyIndex + 1} ATINGIU LIMITE (20/20). Rotacionando...`, true);
                         currentKeyIndex = (currentKeyIndex + 1) % keys.length;
                         attempts++; continue;
                     }
 
                     if (!response.ok) {
-                        const err = await response.json();
-                        addLog(`ERRO CHAVE ${currentKeyIndex + 1}: ${err.error?.message}`, true);
                         currentKeyIndex = (currentKeyIndex + 1) % keys.length;
                         attempts++; continue;
                     }
@@ -173,7 +175,6 @@
                     const data = await response.json();
                     return JSON.parse(data.candidates[0].content.parts[0].text);
                 } catch (e) {
-                    addLog(`FALHA NA CHAVE ${currentKeyIndex + 1}.`, true);
                     currentKeyIndex = (currentKeyIndex + 1) % keys.length;
                     attempts++;
                 }
@@ -191,7 +192,7 @@
             document.getElementById('downloadSection').classList.remove('hidden');
             document.getElementById('downloadBtn').onclick = () => {
                 const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-                a.download = `importacao_finalizada.json`; a.click();
+                a.download = `importacao_final.json`; a.click();
             };
         }
 
@@ -206,26 +207,18 @@
                 const rowsParaProcessar = allRows.slice(startAt);
                 document.getElementById('progressSection').classList.remove('hidden');
                 
-                const conf = {
-                    tipo: document.getElementById('flagTipoEscala').value,
-                    carga: document.getElementById('flagCarga').value,
-                    dsr: document.getElementById('flagForcarDSR').checked,
-                    pares: document.getElementById('flagBatidasPares').value === 'true',
-                    auto: document.getElementById('flagBatidaAuto').value ? document.getElementById('flagBatidaAuto').value.split(',').map(t => toHHMM(t.trim())) : []
-                };
-
-                addLog(`INICIANDO: Puladas ${startAt} escalas. Processando ${rowsParaProcessar.length} restantes.`);
+                const conf = { carga: document.getElementById('flagCarga').value, dsr: document.getElementById('flagForcarDSR').checked, pares: document.getElementById('flagBatidasPares').value === 'true', auto: document.getElementById('flagBatidaAuto').value ? document.getElementById('flagBatidaAuto').value.split(',').map(t => toHHMM(t.trim())) : [] };
 
                 const batchSize = 40; 
                 for (let i = 0; i < rowsParaProcessar.length && !isStopped; i += batchSize) {
                     const batchRaw = rowsParaProcessar.slice(i, i + batchSize);
-                    document.getElementById('statusText').textContent = "Consultando Pool...";
+                    document.getElementById('statusText').textContent = "Processando Lote...";
                     
                     let aiResults = await callGemini(batchRaw.map(r => r.split(',')[2] || ""));
                     
                     if (aiResults === "PAUSE_ALL") {
-                        document.getElementById('statusText').textContent = "POOL ESGOTADO";
-                        addLog("Aguardando 60s para reset parcial...", true);
+                        document.getElementById('statusText').textContent = "TODAS AS CHAVES ESGOTADAS";
+                        addLog("Aguardando reset ou novas chaves...", true);
                         await delay(60000); i -= batchSize; continue;
                     }
 
@@ -234,7 +227,6 @@
                             if (!batchRaw[idx]) return;
                             const original = batchRaw[idx].split(',');
                             const diasID = [], dias = ['SEG','TER','QUA','QUI','SEX','SAB','DOM'];
-                            
                             if (conf.dsr && !dias.some(d => res[d] === "LIVRE")) res['DOM'] = "LIVRE";
                             const livres = dias.filter(d => res[d] === "LIVRE");
 
@@ -248,25 +240,18 @@
                                     const h = JSON.stringify(val);
                                     if (!jorMap[h]) {
                                         const k = generateKey(); jorMap[h] = k;
-                                        finalJornadas[k] = { 
-                                            "NOME_JORNADA": val.join(' | '), "HORAS_CONTRATUAIS": val, 
-                                            "PREASSINALA_SOMENTE_BATIDAS_PARES": conf.pares,
-                                            "batida_automatica": conf.auto,
-                                            "id": k, "key": k 
-                                        };
+                                        finalJornadas[k] = { "NOME_JORNADA": val.join(' | '), "HORAS_CONTRATUAIS": val, "PREASSINALA_SOMENTE_BATIDAS_PARES": conf.pares, "batida_automatica": conf.auto, "id": k, "key": k };
                                     }
                                     diasID.push(jorMap[h]);
                                 }
                             });
-                            finalEscalas.push({ "NOME": original[1], "COD": original[0], "carga_horaria": conf.carga, "TIPO": conf.tipo, "JORNADAS": diasID, "key": generateKey() });
+                            finalEscalas.push({ "NOME": original[1], "COD": original[0], "carga_horaria": conf.carga, "ignora_carga_horaria_e_tipo_funcionario": "ignora_carga_horaria_e_tipo_funcionario", "JORNADAS": diasID, "key": generateKey() });
                         });
-                        
                         const progressoReal = startAt + finalEscalas.length;
-                        const percent = Math.min(Math.round((progressoReal / allRows.length) * 100), 100);
-                        document.getElementById('progressBar').style.width = percent + "%";
-                        document.getElementById('percentDisplay').textContent = percent + "%";
+                        document.getElementById('progressBar').style.width = Math.min(Math.round((progressoReal / allRows.length) * 100), 100) + "%";
+                        document.getElementById('percentDisplay').textContent = Math.min(Math.round((progressoReal / allRows.length) * 100), 100) + "%";
                         document.getElementById('totalCounter').textContent = progressoReal + " / " + allRows.length;
-                        addLog(`Lote processado. Total global: ${progressoReal}`);
+                        addLog(`Lote OK. Total processado: ${progressoReal}`);
                     }
                     await delay(12000);
                 }

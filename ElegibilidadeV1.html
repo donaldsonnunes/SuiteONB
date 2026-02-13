@@ -3,32 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Integrador Ahgora - Sincronização e Elegibilidade</title>
+    <title>Ahgora Suite - Integrador</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💼</text></svg>">
 
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eaeff2; padding: 0; margin: 0; color: #333; height: 100vh; display: flex; flex-direction: column; }
         
+        /* HEADER DA SUÍTE */
+        .suite-header { background: #0056b3; color: white; padding: 15px 30px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .suite-logo svg { width: 32px; height: 32px; fill: white; }
+        .suite-title { font-size: 20px; font-weight: 600; margin: 0; }
+        .suite-subtitle { font-size: 12px; opacity: 0.8; font-weight: normal; margin-left: 10px; border-left: 1px solid rgba(255,255,255,0.3); padding-left: 10px; }
+
         /* Layout Principal */
         .main-wrapper { display: flex; flex: 1; max-width: 1400px; margin: 0 auto; width: 100%; gap: 20px; padding: 20px; box-sizing: border-box; }
         
-        /* Coluna da Esquerda (Aplicação) */
+        /* Colunas */
         .app-column { flex: 2; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow-y: auto; }
-        
-        /* Coluna da Direita (Instruções) */
         .info-column { flex: 1; background: #f8f9fa; padding: 25px; border-radius: 8px; border: 1px solid #dee2e6; overflow-y: auto; }
 
         h2 { border-bottom: 3px solid #007bff; padding-bottom: 10px; color: #2c3e50; margin-top: 0; font-size: 22px; }
         h3 { font-size: 18px; color: #0056b3; margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
         
-        /* Estilos de Texto da Instrução */
+        /* Componentes de Texto */
         .info-item { margin-bottom: 20px; }
         .info-label { font-weight: bold; color: #495057; display: block; margin-bottom: 5px; font-size: 14px; }
         .info-text { font-size: 13px; line-height: 1.5; color: #666; margin: 0; }
         
         .important-box { background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; border-radius: 4px; margin-top: 15px; }
         .important-title { font-weight: bold; color: #856404; font-size: 13px; margin-bottom: 5px; display: block; }
-
         .code-snippet { background: #2d2d2d; color: #a5fb8f; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 12px; margin-top: 5px; white-space: pre-wrap; word-break: break-all; }
 
         /* Formulários */
@@ -46,7 +51,6 @@
 
         .alert-proxy { background: #e2e3e5; color: #383d41; padding: 10px; text-align: center; border-radius: 4px; margin-bottom: 20px; font-size: 13px; border: 1px solid #d6d8db; }
         
-        /* Tabela e Logs */
         .table-container { margin-top: 20px; overflow-x: auto; border: 1px solid #ddd; border-radius: 5px; max-height: 250px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { background: #007bff; color: white; text-align: left; padding: 10px; position: sticky; top: 0; }
@@ -60,7 +64,6 @@
         
         #progressBar { width: 0%; height: 5px; background: #27ae60; transition: width 0.3s; margin-top: 10px; }
 
-        /* Responsividade */
         @media (max-width: 900px) {
             .main-wrapper { flex-direction: column-reverse; }
             .info-column { margin-bottom: 20px; }
@@ -70,10 +73,18 @@
 </head>
 <body>
 
+<div class="suite-header">
+    <div class="suite-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+    </div>
+    <div class="suite-title">Ahgora Suite</div>
+    <div class="suite-subtitle">Módulo de Integração de Pessoal</div>
+</div>
+
 <div class="main-wrapper">
     
     <div class="app-column">
-        <h2>🛠️ Integrador e Sincronizador</h2>
+        <h2>🛠️ Sincronizador de Funcionários</h2>
 
         <div class="alert-proxy">
             <strong>⚠️ Obrigatório:</strong> Antes de enviar, ative o Proxy temporário clicando aqui: 
