@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Conversor V73 - Anti-Bloqueio 3-Step</title>
+    <title>Conversor V74 - Gemini 2.5 Flash Default</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
@@ -17,7 +17,7 @@
 
     <div class="max-w-[1800px] mx-auto grid lg:grid-cols-5 gap-6">
         
-        <aside class="lg:col-span-1">
+        <aside class="lg:col-span-1 space-y-4">
             <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-2xl sticky top-4 space-y-5">
                 <div>
                     <h2 class="text-[10px] font-black text-emerald-400 uppercase border-b border-slate-700 pb-2 mb-3 italic tracking-widest">Pool de 4 API Keys</h2>
@@ -31,17 +31,13 @@
 
                 <div class="pt-3 border-t border-slate-700">
                     <label class="block text-[10px] font-black text-blue-300 uppercase mb-1">Ponto de Partida:</label>
-                    <input type="number" id="startRow" value="1087" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-white font-bold text-lg">
-                    <p class="text-[9px] text-slate-400 mt-1 italic">Inicie de onde parou para economizar cota.</p>
+                    <input type="number" id="startRow" value="1" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-white font-bold text-lg">
+                    <p class="text-[9px] text-slate-400 mt-1 italic italic">Retomando de 1086.</p>
                 </div>
 
                 <div class="pt-3 border-t border-slate-700 space-y-3">
-                    <h2 class="text-[10px] font-black text-blue-400 uppercase italic">Escala & Jornada</h2>
-                    <input type="text" id="flagCarga" value="44" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs">
-                    <select id="flagBatidasPares" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px]">
-                        <option value="false">Batidas Pares: Não</option>
-                        <option value="true">Batidas Pares: Sim</option>
-                    </select>
+                    <h2 class="text-[10px] font-black text-blue-400 uppercase italic">Modelo Padrão</h2>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-700 text-[10px] text-amber-400 font-mono">gemini-2.5-flash</div>
                 </div>
             </div>
         </aside>
@@ -69,16 +65,14 @@
 
             <div class="bg-black/50 rounded-2xl p-6 border border-slate-800 shadow-inner">
                 <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
-                    <h3 class="text-[10px] font-bold text-slate-500 uppercase italic">Monitor de Transação</h3>
+                    <h3 class="text-[10px] font-bold text-slate-500 uppercase italic">Monitor (2.5-flash)</h3>
                     <span id="totalCounter" class="text-blue-500 font-black font-mono">0 / 0</span>
                 </div>
                 <div id="logArea" class="h-64 overflow-y-auto space-y-1 text-[10px] font-mono text-slate-400 italic scroll-custom"></div>
             </div>
 
             <div id="downloadSection" class="hidden flex justify-center pb-12">
-                <button id="downloadBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-24 py-8 rounded-full font-black uppercase text-xl transition-all">
-                    Baixar JSON Finalizado
-                </button>
+                <button id="downloadBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-24 py-8 rounded-full font-black uppercase text-xl">Baixar JSON Restante</button>
             </div>
         </main>
 
@@ -86,9 +80,9 @@
             <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 shadow-2xl sticky top-4 space-y-6">
                 <h2 class="text-xs font-black text-blue-400 uppercase border-b border-slate-800 pb-2 italic tracking-widest">Guia de Utilização</h2>
                 <div class="space-y-4 text-[11px] leading-relaxed text-slate-400">
-                    <p><b>1) Chaves:</b> Acesse <a href="https://aistudio.google.com/api-keys" target="_blank" class="text-blue-400 underline">AI Studio</a> em uma conta privada e crie chaves em projetos diferentes.</p>
-                    <p><b>2) Limites:</b> O modelo 2.0 Flash tem cota de 20 requisições diárias.</p>
-                    <p><b>3) Estratégia:</b> Se o erro 429 persistir, use uma <b>Janela Anônima</b> para limpar o rastro do IP no Google.</p>
+                    <p><b>1) Chaves:</b> Use chaves de <b>contas privadas diferentes</b> para somar as cotas de 20 chamadas/dia.</p>
+                    <p><b>2) O Modelo:</b> Configurado como <b>Gemini 2.5-flash</b> por padrão, conforme sua necessidade.</p>
+                    <p><b>3) Estratégia:</b> Se o erro 429 persistir mesmo com chaves novas, o Google bloqueou seu IP temporariamente. Use uma <b>Janela Anônima</b> ou mude de rede.</p>
                 </div>
             </div>
         </aside>
@@ -103,7 +97,6 @@
         
         const delay = ms => new Promise(res => setTimeout(res, ms));
         function generateKey() { return Array.from({length: 24}, () => '0123456789abcdef'[Math.floor(Math.random()*16)]).join(''); }
-        function toHHMM(t) { return t.replace(/[^0-9]/g, '').padStart(4, '0'); }
 
         function getKeys() { return Array.from(document.querySelectorAll('.key-input')).map(i => i.value.trim()).filter(v => v !== ""); }
         function highlightKey(index) {
@@ -126,13 +119,14 @@
                 const apiKey = keys[currentKeyIndex];
                 highlightKey(currentKeyIndex);
                 
+                // MODELO DEFINIDO COMO 2.5-FLASH POR PADRÃO
                 const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'X-goog-api-key': apiKey },
                         body: JSON.stringify({
-                            contents: [{ parts: [{ text: `Return JSON ARRAY. Each object: SEG, TER, QUA, QUI, SEX, SAB, DOM. Values: ["HH:MM", "HH:MM"] or "LIVRE". Input: ${descriptions.join(' | ')}` }] }],
+                            contents: [{ parts: [{ text: `Return JSON ARRAY. Objects: SEG...DOM. Values: ["HH:MM", "HH:MM"] or "LIVRE". Input: ${descriptions.join(' | ')}` }] }],
                             generationConfig: { responseMimeType: "application/json", temperature: 0.1 }
                         })
                     });
@@ -168,7 +162,7 @@
             document.getElementById('downloadSection').classList.remove('hidden');
             document.getElementById('downloadBtn').onclick = () => {
                 const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-                a.download = `resultado_final.json`; a.click();
+                a.download = `resultado_2.5_flash.json`; a.click();
             };
         }
 
@@ -182,12 +176,10 @@
                 const rowsParaProcessar = allRows.slice(startAt);
                 document.getElementById('progressSection').classList.remove('hidden');
                 
-                const conf = { carga: document.getElementById('flagCarga').value, pares: document.getElementById('flagBatidasPares').value === 'true' };
-
-                const batchSize = 30; // Lote reduzido para evitar bloqueio por IP
+                const batchSize = 20; // LOTE REDUZIDO PARA MINIMIZAR RISCO DE 429
                 for (let i = 0; i < rowsParaProcessar.length && !isStopped; i += batchSize) {
                     const batchRaw = rowsParaProcessar.slice(i, i + batchSize);
-                    document.getElementById('statusText').textContent = "Processando Lote...";
+                    document.getElementById('statusText').textContent = "Processando (2.5-flash)...";
                     
                     let aiResults = await callGemini(batchRaw.map(r => r.split(',')[2] || ""));
                     
@@ -208,20 +200,20 @@
                                     const h = JSON.stringify(val);
                                     if (!jorMap[h]) {
                                         const k = generateKey(); jorMap[h] = k;
-                                        finalJornadas[k] = { "NOME_JORNADA": val.join(' | '), "HORAS_CONTRATUAIS": val, "PREASSINALA_SOMENTE_BATIDAS_PARES": conf.pares, "id": k, "key": k };
+                                        finalJornadas[k] = { "NOME_JORNADA": val.join(' | '), "HORAS_CONTRATUAIS": val, "id": k, "key": k };
                                     }
                                     diasID.push(jorMap[h]);
                                 }
                             });
-                            finalEscalas.push({ "NOME": original[1], "COD": original[0], "carga_horaria": conf.carga, "JORNADAS": diasID, "key": generateKey() });
+                            finalEscalas.push({ "NOME": original[1], "COD": original[0], "carga_horaria": "44", "JORNADAS": diasID, "key": generateKey() });
                         });
                         const progressoReal = startAt + finalEscalas.length;
                         document.getElementById('progressBar').style.width = Math.min(Math.round((progressoReal / allRows.length) * 100), 100) + "%";
                         document.getElementById('percentDisplay').textContent = Math.min(Math.round((progressoReal / allRows.length) * 100), 100) + "%";
                         document.getElementById('totalCounter').textContent = progressoReal + " / " + allRows.length;
-                        addLog(`Lote OK. Total: ${progressoReal}`);
+                        addLog(`Lote OK (2.5-flash). Total: ${progressoReal}`);
                     }
-                    await delay(20000); // Pausa de 20s para o IP "esfriar"
+                    await delay(25000); // INTERVALO DE 25S PARA "ESFRIAR" O IP
                 }
                 if(!isStopped) finish();
             };
