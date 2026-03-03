@@ -177,7 +177,7 @@
             while (attempts < keys.length) {
                 const apiKey = keys[currentKeyIndex];
                 highlightKey(currentKeyIndex);
-                const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+                const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
