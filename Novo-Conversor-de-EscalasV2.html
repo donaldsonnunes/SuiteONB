@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Conversor RH V103 - Nomenclaturas Finais</title>
+    <title>Conversor RH V106 - Carga 220 & Manual</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
@@ -11,57 +11,57 @@
         .active-key { border-color: #10b981 !important; background-color: #064e3b !important; border-width: 2px; }
         .scroll-custom::-webkit-scrollbar { width: 6px; }
         .scroll-custom::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .instruction-box { background: rgba(30, 41, 59, 0.7); border: 1px solid #334155; padding: 12px; border-radius: 8px; font-size: 11px; line-height: 1.5; }
+        .example-badge { background: #1e293b; color: #38bdf8; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 10px; display: block; margin-top: 5px; }
     </style>
 </head>
 <body class="p-4">
 
-    <div class="max-w-[1800px] mx-auto grid lg:grid-cols-5 gap-6">
+    <div class="max-w-[1900px] mx-auto grid lg:grid-cols-5 gap-6">
         
         <aside class="lg:col-span-1 space-y-4">
             <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-2xl sticky top-4 space-y-5 overflow-y-auto max-h-[95vh] scroll-custom">
+                <h2 class="text-xs font-black text-blue-400 uppercase border-b border-slate-700 pb-2 italic tracking-widest text-center">Configurações</h2>
                 
-                <div>
-                    <h2 class="text-[10px] font-black text-emerald-400 uppercase border-b border-slate-700 pb-2 mb-3 italic tracking-widest">Pool de 4 API Keys</h2>
-                    <div id="keyPool" class="space-y-2">
-                        <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 01">
-                        <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 02">
-                        <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 03">
-                        <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 04">
-                    </div>
+                <div id="keyPool" class="space-y-2">
+                    <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Pool de 4 API Keys</label>
+                    <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 01">
+                    <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 02">
+                    <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 03">
+                    <input type="password" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 04">
                 </div>
 
                 <div class="pt-3 border-t border-slate-700 space-y-4">
-                    <h2 class="text-[10px] font-black text-blue-400 uppercase italic tracking-widest">Configurações RH</h2>
-                    
-                    <div class="space-y-1">
-                        <label class="text-[9px] font-bold text-slate-500 uppercase">Linha Inicial:</label>
-                        <input type="number" id="startRow" value="1" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-white font-bold">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[9px] font-bold text-slate-500 uppercase">Linha Inicial</label>
+                            <input type="number" id="startRow" value="1" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-white font-bold text-xs">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold text-slate-500 uppercase">Carga Horária</label>
+                            <input type="text" id="flagCarga" value="220" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs font-bold">
+                        </div>
                     </div>
 
-                    <div class="space-y-1">
-                        <label class="text-[9px] font-bold text-slate-500 uppercase italic">Compensável? (ok)</label>
-                        <select id="flagCompensavel" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs">
-                            <option value="true" selected>Sim</option>
-                            <option value="false">Não</option>
-                        </select>
-                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center bg-slate-900/50 p-2 rounded border border-slate-700">
+                            <label class="text-[9px] font-bold text-slate-300 uppercase italic">Compensável? (ok)</label>
+                            <select id="flagCompensavel" class="bg-transparent text-emerald-400 font-bold text-[10px] outline-none cursor-pointer">
+                                <option value="true" selected>Sim</option>
+                                <option value="false">Não</option>
+                            </select>
+                        </div>
 
-                    <div class="space-y-1">
-                        <label class="text-[9px] font-bold text-slate-500 uppercase italic">Pré Assinaladas?</label>
-                        <select id="flagPreAssinaladas" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs">
-                            <option value="false" selected>Não</option>
-                            <option value="true">Sim</option>
-                        </select>
-                    </div>
+                        <div class="flex justify-between items-center bg-slate-900/50 p-2 rounded border border-slate-700">
+                            <label class="text-[9px] font-bold text-slate-300 uppercase italic">Pré Assinaladas?</label>
+                            <select id="flagPreAssinaladas" class="bg-transparent text-emerald-400 font-bold text-[10px] outline-none cursor-pointer">
+                                <option value="false" selected>Não</option>
+                                <option value="true">Sim</option>
+                            </select>
+                        </div>
 
-                    <div class="space-y-1">
-                        <label class="text-[9px] font-bold text-slate-500 uppercase italic">Batidas Pré Assinaladas:</label>
-                        <input type="text" id="valPreAssinaladas" placeholder="Ex: 12:00, 13:00" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs">
-                    </div>
-
-                    <div class="space-y-1">
-                        <label class="text-[9px] font-bold text-slate-500 uppercase">Carga Horária:</label>
-                        <input type="text" id="flagCarga" value="44" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs">
+                        <label class="text-[9px] font-bold text-slate-500 uppercase block -mb-1">Batidas Pré Assinaladas</label>
+                        <input type="text" id="valPreAssinaladas" placeholder="Ex: 12:00, 13:00" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px]">
                     </div>
                 </div>
             </div>
@@ -69,17 +69,17 @@
 
         <main class="lg:col-span-3 space-y-6">
             <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-2xl text-center">
-                <div id="uploadArea" class="border-2 border-dashed border-slate-600 rounded-2xl p-16 hover:border-emerald-500 hover:bg-slate-700/50 cursor-pointer transition-all" onclick="document.getElementById('csvFile').click()">
+                <div id="uploadArea" class="border-2 border-dashed border-slate-600 rounded-2xl p-16 hover:border-emerald-500 hover:bg-slate-700/50 cursor-pointer group transition-all" onclick="document.getElementById('csvFile').click()">
                     <input type="file" id="csvFile" accept=".csv" class="hidden">
-                    <div class="text-slate-300 font-black text-3xl uppercase italic">Carregar CSV de Escalas</div>
+                    <div class="text-slate-300 font-black text-3xl uppercase italic group-hover:text-emerald-400 transition-colors tracking-tight">Processar CSV de Horários</div>
                     <div id="fileNameDisplay" class="text-blue-400 font-bold mt-4 h-4 text-xs"></div>
                 </div>
 
                 <div id="progressSection" class="hidden mt-8 space-y-4 text-left">
                     <div class="flex justify-between items-end">
                         <div class="space-y-1">
-                            <span id="statusText" class="text-sm font-bold text-emerald-400 uppercase italic">Batch Process: 20 Scales...</span>
-                            <button id="stopBtn" class="block text-[10px] mt-2 bg-red-600 hover:bg-red-700 text-white font-black px-6 py-2 rounded-full uppercase">Parar e Salvar Parcial</button>
+                            <span id="statusText" class="text-sm font-bold text-emerald-400 uppercase italic animate-pulse">Análise em massa ativada...</span>
+                            <button id="stopBtn" class="block text-[10px] mt-2 bg-red-600 hover:bg-red-700 text-white font-black px-6 py-2 rounded-full uppercase shadow-lg transition-transform hover:scale-105">Interromper Processo</button>
                         </div>
                         <span id="percentDisplay" class="text-6xl font-black text-white">0%</span>
                     </div>
@@ -91,24 +91,53 @@
 
             <div class="bg-black/50 rounded-2xl p-6 border border-slate-800 shadow-inner">
                 <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4 text-[10px]">
-                    <h3 class="font-bold text-slate-500 uppercase italic">Monitor de Atividade</h3>
+                    <h3 class="font-bold text-slate-500 uppercase italic tracking-widest">Console de Atividade</h3>
                     <span id="totalCounter" class="text-blue-500 font-black font-mono text-sm">0 / 0</span>
                 </div>
-                <div id="logArea" class="h-64 overflow-y-auto space-y-1 text-[10px] font-mono text-slate-400 italic scroll-custom italic"></div>
+                <div id="logArea" class="h-64 overflow-y-auto space-y-1 text-[10px] font-mono text-slate-400 italic scroll-custom"></div>
             </div>
 
             <div id="downloadSection" class="hidden flex justify-center pb-12">
                 <button id="downloadBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-24 py-8 rounded-full font-black uppercase text-xl shadow-2xl transition-all scale-105">
-                    Baixar JSON RH Final
+                    Baixar JSON Consolidado
                 </button>
             </div>
         </main>
 
-        <aside class="lg:col-span-1">
-            <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 sticky top-4 space-y-4 text-[11px]">
-                <h2 class="text-xs font-black text-blue-400 uppercase border-b border-slate-800 pb-2 italic text-center">Nomenclaturas V103</h2>
-                <p class="text-slate-400 italic"><b>Pré Assinaladas:</b> Nomenclatura atualizada conforme solicitado.</p>
-                <p class="text-slate-400 italic"><b>Ciclos:</b> 12x36 e Seg-Sex blindados via código JS.</p>
+        <aside class="lg:col-span-1 space-y-4">
+            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-2xl sticky top-4 space-y-5 overflow-y-auto max-h-[95vh] scroll-custom">
+                <h2 class="text-xs font-black text-emerald-400 uppercase border-b border-slate-700 pb-2 italic tracking-widest text-center">Manual Técnico</h2>
+                
+                <div class="space-y-4">
+                    <div class="instruction-box">
+                        <p class="font-black text-blue-400 mb-1 uppercase tracking-tighter text-[11px]">1. Layout do CSV (3 Colunas)</p>
+                        <p class="text-[10px] text-slate-300">O arquivo deve estar no formato <code class="text-amber-400">CSV (separado por vírgula)</code>:</p>
+                        <div class="text-[9px] bg-black/40 p-2 rounded mt-2 border border-slate-600">
+                            <b class="text-slate-500 italic block border-b border-slate-700 mb-1">Exemplo de Linha:</b>
+                            <span class="text-emerald-400">10010,06:00 | 11:00 | 12:00 | 15:00 | Portaria Folga Dom, SEG A SAB 06:00 | 11:00 | 12:00 | 15:00</span>
+                        </div>
+                        <ul class="list-disc ml-4 mt-2 text-[9px] text-slate-400">
+                            <li><b>A:</b> Código Numérico</li>
+                            <li><b>B:</b> Descrição (Usada para IA ler horários)</li>
+                            <li><b>C:</b> Estrutura (Vai para a tag DESC_ESCALA)</li>
+                        </ul>
+                    </div>
+
+                    <div class="instruction-box">
+                        <p class="font-black text-blue-400 mb-1 uppercase tracking-tighter text-[11px]">2. Geração de Chaves</p>
+                        <p class="text-slate-300 mb-2">Gere chaves no <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-emerald-400 underline font-bold">Google AI Studio</a>.</p>
+                        <p class="text-slate-400 text-[9px]">O Google limita 20 requisições/dia por conta. Utilize 4 chaves de e-mails diferentes para processar até <b>1.600 escalas</b> por dia.</p>
+                    </div>
+
+                    <div class="instruction-box">
+                        <p class="font-black text-blue-400 mb-1 uppercase tracking-tighter text-[11px]">3. Inteligência de Ciclos</p>
+                        <ul class="space-y-2 text-[10px] text-slate-300">
+                            <li><span class="text-emerald-400 font-bold">12x36:</span> Detectado por texto -> Gera ciclo de 2 dias (Ativa/Folga).</li>
+                            <li><span class="text-emerald-400 font-bold">SEG A SEX:</span> Detectado por texto -> Força Sábado como <code class="text-blue-300">ID_FOLGA</code>.</li>
+                            <li><span class="text-emerald-400 font-bold">SEG A SAB:</span> Detectado por texto -> Mantém 6 dias de trabalho.</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </aside>
     </div>
@@ -124,8 +153,7 @@
             if (keys.length === 0) return null;
             const apiKey = keys[currentKeyIndex];
             const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
-            const prompt = `Return a JSON ARRAY only. Each object must have an "h" key with array of strings (HH:MM). Input: ${JSON.stringify(texts)}`;
-
+            const prompt = `Return a JSON ARRAY only. Each object has "h": ["HH:MM", "HH:MM", ...]. Input: ${JSON.stringify(texts)}`;
             try {
                 const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-goog-api-key': apiKey }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: 0.1 } }) });
                 if (response.status === 429) { currentKeyIndex = (currentKeyIndex + 1) % keys.length; return "PAUSE"; }
@@ -153,13 +181,12 @@
             document.getElementById('fileNameDisplay').textContent = file.name;
             isStopped = false; finalEscalas = []; finalJornadas = {}; jorMap = {};
             const startAt = parseInt(document.getElementById('startRow').value) - 1;
-            const preAssinaladasVal = document.getElementById('valPreAssinaladas').value ? document.getElementById('valPreAssinaladas').value.split(',').map(t => toHHMM(t.trim())) : [];
+            const batidasAuto = document.getElementById('valPreAssinaladas').value ? document.getElementById('valPreAssinaladas').value.split(',').map(t => toHHMM(t.trim())) : [];
 
             const reader = new FileReader();
             reader.onload = async (e) => {
                 const allRows = e.target.result.split('\n').filter(l => l.trim() !== '').slice(1);
                 document.getElementById('progressSection').classList.remove('hidden');
-                
                 const batchSize = 20; 
                 for (let i = startAt; i < allRows.length && !isStopped; i += batchSize) {
                     const batchRows = allRows.slice(i, Math.min(i + batchSize, allRows.length));
@@ -174,11 +201,10 @@
                     if (Array.isArray(aiResults)) {
                         aiResults.forEach((res, idx) => {
                             if (!dataBatch[idx]) return;
-                            const item = dataBatch[idx], times = res.h;
-                            const hKey = JSON.stringify(times);
+                            const item = dataBatch[idx], times = res.h, hKey = JSON.stringify(times);
                             if (!jorMap[hKey]) {
                                 const k = generateKey(); jorMap[hKey] = k;
-                                finalJornadas[k] = { "NOME_JORNADA": times.join(' | '), "HORAS_CONTRATUAIS": times, "PERIODOS": generatePeriods(times), "PREASSINALA_SOMENTE_BATIDAS_PARES": document.getElementById('flagPreAssinaladas').value === 'true', "batida_automatica": preAssinaladasVal, "FL_COMPENSAVEL": document.getElementById('flagCompensavel').value === 'true' ? "1" : "0", "id": k, "key": k };
+                                finalJornadas[k] = { "NOME_JORNADA": times.join(' | '), "HORAS_CONTRATUAIS": times, "PERIODOS": generatePeriods(times), "PREASSINALA_SOMENTE_BATIDAS_PARES": document.getElementById('flagPreAssinaladas').value === 'true', "batida_automatica": batidasAuto, "FL_COMPENSAVEL": document.getElementById('flagCompensavel').value === 'true' ? "1" : "0", "id": k, "key": k };
                             }
                             let jorArray = [];
                             const n = item.nome.toLowerCase(), d = item.desc.toLowerCase();
@@ -186,18 +212,14 @@
                             else if (n.includes("seg a sex") || d.includes("seg a sex")) jorArray = [jorMap[hKey], jorMap[hKey], jorMap[hKey], jorMap[hKey], jorMap[hKey], "ID_FOLGA", "ID_DSR"];
                             else jorArray = [jorMap[hKey], jorMap[hKey], jorMap[hKey], jorMap[hKey], jorMap[hKey], jorMap[hKey], "ID_DSR"];
 
-                            finalEscalas.push({ 
-                                "NOME": item.nome, "DESC_ESCALA": item.desc, "COD": item.cod, 
-                                "carga_horaria": document.getElementById('flagCarga').value, 
-                                "ignora_carga_horaria_e_tipo_funcionario": "ignora_carga_horaria_e_tipo_funcionario", 
-                                "TIPO": (n.includes("12x36") ? "12X36" : "SEMANAL"), "JORNADAS": jorArray, "key": generateKey(), "id": generateKey() 
-                            });
+                            finalEscalas.push({ "NOME": item.nome, "DESC_ESCALA": item.desc, "COD": item.cod, "carga_horaria": document.getElementById('flagCarga').value, "ignora_carga_horaria_e_tipo_funcionario": "ignora_carga_horaria_e_tipo_funcionario", "TIPO": (n.includes("12x36") ? "12X36" : "SEMANAL"), "JORNADAS": jorArray, "key": generateKey(), "id": generateKey() });
                         });
                         const globalTotal = i + dataBatch.length;
                         document.getElementById('progressBar').style.width = Math.min(Math.round((globalTotal / allRows.length) * 100), 100) + "%";
                         document.getElementById('percentDisplay').textContent = Math.min(Math.round((globalTotal / allRows.length) * 100), 100) + "%";
                         document.getElementById('totalCounter').textContent = `${globalTotal} / ${allRows.length}`;
-                        document.getElementById('logArea').innerHTML += `<div>[${new Date().toLocaleTimeString()}] Lote concluído (até linha ${globalTotal}).</div>`;
+                        document.getElementById('logArea').innerHTML += `<div>[${new Date().toLocaleTimeString()}] Processadas ${dataBatch.length} linhas...</div>`;
+                        document.getElementById('logArea').scrollTop = document.getElementById('logArea').scrollHeight;
                     }
                     await delay(15000); 
                 }
@@ -206,7 +228,7 @@
                     finalJornadas["ID_FOLGA"] = { "NOME_JORNADA": "FOLGA", "PERIODOS": [{"TM_HORA_INICIO": "0000", "TM_HORA_FIM": "2400", "DESC_TIPO_HORA": "Hora Padrão"}], "id": "ID_FOLGA", "key": "ID_FOLGA" };
                     finalJornadas["ID_DSR"] = { "NOME_JORNADA": "DSR", "FL_DSR": "1", "PERIODOS": [{"TM_HORA_INICIO": "0000", "TM_HORA_FIM": "2400", "DESC_TIPO_HORA": "Hora Padrão"}], "id": "ID_DSR", "key": "ID_DSR" };
                     const blob = new Blob([JSON.stringify({ escalas: finalEscalas, jornadas: finalJornadas, horas_adicionais: {} }, null, 4)], { type: 'application/json' });
-                    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `rh_v103_final.json`; a.click();
+                    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `importacao_final_v106.json`; a.click();
                 };
             };
             reader.readAsText(file);
