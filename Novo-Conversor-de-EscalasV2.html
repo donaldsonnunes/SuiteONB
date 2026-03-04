@@ -2,13 +2,13 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Conversor V75 - Padrão RH Estruturado</title>
+    <title>Conversor RH V103 - Nomenclaturas Finais</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .key-input { font-family: monospace; font-size: 10px; }
-        .active-key { border-color: #10b981 !important; background-color: #052e16 !important; box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
+        .key-input { font-family: monospace; font-size: 11px; }
+        .active-key { border-color: #10b981 !important; background-color: #064e3b !important; border-width: 2px; }
         .scroll-custom::-webkit-scrollbar { width: 6px; }
         .scroll-custom::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
@@ -19,6 +19,7 @@
         
         <aside class="lg:col-span-1 space-y-4">
             <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-2xl sticky top-4 space-y-5 overflow-y-auto max-h-[95vh] scroll-custom">
+                
                 <div>
                     <h2 class="text-[10px] font-black text-emerald-400 uppercase border-b border-slate-700 pb-2 mb-3 italic tracking-widest">Pool de 4 API Keys</h2>
                     <div id="keyPool" class="space-y-2">
@@ -29,46 +30,38 @@
                     </div>
                 </div>
 
-                <div class="pt-3 border-t border-slate-700">
-                    <label class="block text-[10px] font-black text-blue-300 uppercase mb-1">Ponto de Partida:</label>
-                    <input type="number" id="startRow" value="1" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-white font-bold text-lg">
-                </div>
+                <div class="pt-3 border-t border-slate-700 space-y-4">
+                    <h2 class="text-[10px] font-black text-blue-400 uppercase italic tracking-widest">Configurações RH</h2>
+                    
+                    <div class="space-y-1">
+                        <label class="text-[9px] font-bold text-slate-500 uppercase">Linha Inicial:</label>
+                        <input type="number" id="startRow" value="1" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-white font-bold">
+                    </div>
 
-                <div class="pt-3 border-t border-slate-700 space-y-3">
-                    <h2 class="text-[10px] font-black text-blue-400 uppercase italic">Escala (Nível 1)</h2>
-                    <div class="grid grid-cols-2 gap-2">
-                        <select id="flagTipoEscala" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px]">
-                            <option value="SEMANAL">SEMANAL</option>
-                            <option value="12X36">12X36</option>
-                            <option value="MENSAL">MENSAL</option>
-                        </select>
-                        <input type="text" id="flagCarga" value="44" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px]" title="Carga Horária">
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <input type="checkbox" id="flagForcarDSR" checked class="w-3 h-3 bg-slate-900 border-slate-700">
-                        <label for="flagForcarDSR" class="text-[9px] font-bold text-slate-400">DSR no Domingo se 7x0</label>
-                    </div>
-                </div>
-
-                <div class="pt-3 border-t border-slate-700 space-y-3">
-                    <h2 class="text-[10px] font-black text-purple-400 uppercase italic">Jornada (Nível 2)</h2>
-                    <div>
-                        <label class="text-[9px] text-slate-500 font-bold uppercase mb-1 block">Compensável?</label>
-                        <select id="flagCompensavel" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px]">
-                            <option value="1">Sim (1)</option>
-                            <option value="0">Não (0)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-[9px] text-slate-500 font-bold uppercase mb-1 block">Batidas Pares?</label>
-                        <select id="flagBatidasPares" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px]">
-                            <option value="false">Não</option>
+                    <div class="space-y-1">
+                        <label class="text-[9px] font-bold text-slate-500 uppercase italic">Compensável? (ok)</label>
+                        <select id="flagCompensavel" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs">
                             <option value="true" selected>Sim</option>
+                            <option value="false">Não</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="text-[9px] text-slate-500 font-bold uppercase mb-1 block">Batida Automática</label>
-                        <input type="text" id="flagBatidaAuto" placeholder="Ex: 11:00, 12:00" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-[10px] font-mono">
+
+                    <div class="space-y-1">
+                        <label class="text-[9px] font-bold text-slate-500 uppercase italic">Pré Assinaladas?</label>
+                        <select id="flagPreAssinaladas" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs">
+                            <option value="false" selected>Não</option>
+                            <option value="true">Sim</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[9px] font-bold text-slate-500 uppercase italic">Batidas Pré Assinaladas:</label>
+                        <input type="text" id="valPreAssinaladas" placeholder="Ex: 12:00, 13:00" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[9px] font-bold text-slate-500 uppercase">Carga Horária:</label>
+                        <input type="text" id="flagCarga" value="44" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs">
                     </div>
                 </div>
             </div>
@@ -76,214 +69,149 @@
 
         <main class="lg:col-span-3 space-y-6">
             <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-2xl text-center">
-                <div id="uploadArea" class="border-2 border-dashed border-slate-600 rounded-2xl p-16 hover:border-emerald-500 hover:bg-slate-700/50 cursor-pointer group transition-all">
+                <div id="uploadArea" class="border-2 border-dashed border-slate-600 rounded-2xl p-16 hover:border-emerald-500 hover:bg-slate-700/50 cursor-pointer transition-all" onclick="document.getElementById('csvFile').click()">
                     <input type="file" id="csvFile" accept=".csv" class="hidden">
-                    <div class="text-slate-300 font-black text-3xl uppercase italic group-hover:text-emerald-400 transition-colors">Selecione o CSV</div>
-                    <p id="fileNameDisplay" class="text-sm text-blue-400 font-bold mt-4"></p>
+                    <div class="text-slate-300 font-black text-3xl uppercase italic">Carregar CSV de Escalas</div>
+                    <div id="fileNameDisplay" class="text-blue-400 font-bold mt-4 h-4 text-xs"></div>
                 </div>
 
                 <div id="progressSection" class="hidden mt-8 space-y-4 text-left">
                     <div class="flex justify-between items-end">
                         <div class="space-y-1">
-                            <span id="statusText" class="text-sm font-bold text-emerald-400 uppercase animate-pulse italic">Processando...</span>
-                            <button id="stopBtn" class="block text-[10px] mt-2 bg-red-600 text-white font-bold px-4 py-2 rounded hover:bg-red-700 uppercase">Parar e Baixar</button>
+                            <span id="statusText" class="text-sm font-bold text-emerald-400 uppercase italic">Batch Process: 20 Scales...</span>
+                            <button id="stopBtn" class="block text-[10px] mt-2 bg-red-600 hover:bg-red-700 text-white font-black px-6 py-2 rounded-full uppercase">Parar e Salvar Parcial</button>
                         </div>
-                        <span id="percentDisplay" class="text-5xl font-black text-white">0%</span>
+                        <span id="percentDisplay" class="text-6xl font-black text-white">0%</span>
                     </div>
-                    <div class="w-full bg-slate-900 h-8 rounded-full border border-slate-700 p-1 relative overflow-hidden">
-                        <div id="progressBar" class="bg-gradient-to-r from-blue-600 via-emerald-500 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                    <div class="w-full bg-slate-900 h-10 rounded-full border border-slate-700 p-1 relative overflow-hidden">
+                        <div id="progressBar" class="bg-gradient-to-r from-blue-600 to-emerald-400 h-full rounded-full transition-all duration-700" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
 
             <div class="bg-black/50 rounded-2xl p-6 border border-slate-800 shadow-inner">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
-                    <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] italic">Monitor de Transação (2.5-flash)</h3>
+                <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4 text-[10px]">
+                    <h3 class="font-bold text-slate-500 uppercase italic">Monitor de Atividade</h3>
                     <span id="totalCounter" class="text-blue-500 font-black font-mono text-sm">0 / 0</span>
                 </div>
-                <div id="logArea" class="h-64 overflow-y-auto space-y-1 text-[10px] font-mono text-slate-400 italic scroll-custom"></div>
+                <div id="logArea" class="h-64 overflow-y-auto space-y-1 text-[10px] font-mono text-slate-400 italic scroll-custom italic"></div>
             </div>
 
             <div id="downloadSection" class="hidden flex justify-center pb-12">
-                <button id="downloadBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-24 py-8 rounded-full font-black uppercase text-xl shadow-2xl transition-all">
-                    Baixar JSON Finalizado
+                <button id="downloadBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-24 py-8 rounded-full font-black uppercase text-xl shadow-2xl transition-all scale-105">
+                    Baixar JSON RH Final
                 </button>
             </div>
         </main>
 
         <aside class="lg:col-span-1">
-            <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 shadow-2xl sticky top-4 space-y-6">
-                <h2 class="text-xs font-black text-blue-400 uppercase border-b border-slate-800 pb-2 italic tracking-widest">Guia de Utilização</h2>
-                <div class="space-y-4 text-[11px] leading-relaxed text-slate-400">
-                    <p class="font-bold text-slate-200">1) Como gerar as chaves:</p>
-                    <p>Acesse o <a href="https://aistudio.google.com/api-keys" target="_blank" class="text-blue-400 underline">Google AI Studio</a> logado em sua conta privada, crie 4 projetos com 4 chaves diferentes. Cole-as no pool à esquerda.</p>
-
-                    <p class="font-bold text-slate-200 pt-2">2) Por que isso é necessário?</p>
-                    <p>Na conta gratuita, o limite é de 20 chamadas diárias por chave. Como processamos 20 escalas por vez, 4 chaves permitem processar até 1.600 escalas/dia.</p>
-
-                    <p class="font-bold text-slate-200 pt-2">3) Ponto de Partida:</p>
-                    <p>Se o processo travar ou a cota acabar, baixe o arquivo atual. No dia seguinte, informe a próxima linha no campo azul para continuar sem repetir o que já foi feito.</p>
-                </div>
+            <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 sticky top-4 space-y-4 text-[11px]">
+                <h2 class="text-xs font-black text-blue-400 uppercase border-b border-slate-800 pb-2 italic text-center">Nomenclaturas V103</h2>
+                <p class="text-slate-400 italic"><b>Pré Assinaladas:</b> Nomenclatura atualizada conforme solicitado.</p>
+                <p class="text-slate-400 italic"><b>Ciclos:</b> 12x36 e Seg-Sex blindados via código JS.</p>
             </div>
         </aside>
     </div>
 
     <script>
-        let isStopped = false;
-        let currentKeyIndex = 0;
-        let finalEscalas = [];
-        let finalJornadas = {};
-        let jorMap = {};
-        
+        let isStopped = false, currentKeyIndex = 0, finalEscalas = [], finalJornadas = {}, jorMap = {};
         const delay = ms => new Promise(res => setTimeout(res, ms));
         function generateKey() { return Array.from({length: 24}, () => '0123456789abcdef'[Math.floor(Math.random()*16)]).join(''); }
         function toHHMM(t) { return t.replace(/[^0-9]/g, '').padStart(4, '0'); }
 
+        async function callGeminiBatch(texts) {
+            const keys = Array.from(document.querySelectorAll('.key-input')).map(i => i.value.trim()).filter(v => v !== "");
+            if (keys.length === 0) return null;
+            const apiKey = keys[currentKeyIndex];
+            const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+            const prompt = `Return a JSON ARRAY only. Each object must have an "h" key with array of strings (HH:MM). Input: ${JSON.stringify(texts)}`;
+
+            try {
+                const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-goog-api-key': apiKey }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: 0.1 } }) });
+                if (response.status === 429) { currentKeyIndex = (currentKeyIndex + 1) % keys.length; return "PAUSE"; }
+                const data = await response.json(); return JSON.parse(data.candidates[0].content.parts[0].text);
+            } catch (e) { return null; }
+        }
+
         function generatePeriods(times) {
-            const periods = [];
-            periods.push({ "TM_HORA_INICIO": "0000", "TM_HORA_FIM": toHHMM(times[0]), "DESC_TIPO_HORA": "Hora Padrão" });
-            
+            const p = [];
+            p.push({ "TM_HORA_INICIO": "0000", "TM_HORA_FIM": toHHMM(times[0]), "DESC_TIPO_HORA": "Hora Padrão" });
             if (times.length === 2) {
-                periods.push({ "TM_HORA_INICIO": toHHMM(times[0]), "TM_HORA_FIM": toHHMM(times[1]), "DESC_TIPO_HORA": "Expediente" });
-                periods.push({ "TM_HORA_INICIO": toHHMM(times[1]), "TM_HORA_FIM": "2400", "DESC_TIPO_HORA": "Hora Padrão" });
+                p.push({ "TM_HORA_INICIO": toHHMM(times[0]), "TM_HORA_FIM": toHHMM(times[1]), "DESC_TIPO_HORA": "Expediente" });
+                p.push({ "TM_HORA_INICIO": toHHMM(times[1]), "TM_HORA_FIM": "2400", "DESC_TIPO_HORA": "Hora Padrão" });
             } else if (times.length === 4) {
-                periods.push({ "TM_HORA_INICIO": toHHMM(times[0]), "TM_HORA_FIM": toHHMM(times[1]), "DESC_TIPO_HORA": "Expediente" });
-                periods.push({ "TM_HORA_INICIO": toHHMM(times[1]), "TM_HORA_FIM": toHHMM(times[2]), "DESC_TIPO_HORA": "Hora Padrão" });
-                periods.push({ "TM_HORA_INICIO": toHHMM(times[2]), "TM_HORA_FIM": toHHMM(times[3]), "DESC_TIPO_HORA": "Expediente" });
-                periods.push({ "TM_HORA_INICIO": toHHMM(times[3]), "TM_HORA_FIM": "2400", "DESC_TIPO_HORA": "Hora Padrão" });
+                p.push({ "TM_HORA_INICIO": toHHMM(times[0]), "TM_HORA_FIM": toHHMM(times[1]), "DESC_TIPO_HORA": "Expediente" });
+                p.push({ "TM_HORA_INICIO": toHHMM(times[1]), "TM_HORA_FIM": toHHMM(times[2]), "DESC_TIPO_HORA": "Hora Padrão" });
+                p.push({ "TM_HORA_INICIO": toHHMM(times[2]), "TM_HORA_FIM": toHHMM(times[3]), "DESC_TIPO_HORA": "Expediente" });
+                p.push({ "TM_HORA_INICIO": toHHMM(times[3]), "TM_HORA_FIM": "2400", "DESC_TIPO_HORA": "Hora Padrão" });
             }
-            return periods;
+            return p;
         }
 
-        function getKeys() { return Array.from(document.querySelectorAll('.key-input')).map(i => i.value.trim()).filter(v => v !== ""); }
-        function highlightKey(index) {
-            document.querySelectorAll('.key-input').forEach((input, i) => {
-                if (i === index) input.classList.add('active-key');
-                else input.classList.remove('active-key');
-            });
-        }
-
-        function addLog(msg, isError = false) {
-            const area = document.getElementById('logArea');
-            area.innerHTML += `<div class="${isError ? 'text-red-400 font-bold' : ''}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
-            area.scrollTop = area.scrollHeight;
-        }
-
-        async function callGemini(descriptions) {
-            const keys = getKeys();
-            if (keys.length === 0) { addLog("ERRO: Nenhuma chave no pool!", true); return null; }
-
-            let attempts = 0;
-            while (attempts < keys.length) {
-                const apiKey = keys[currentKeyIndex];
-                highlightKey(currentKeyIndex);
-                const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-goog-api-key': apiKey },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: `Return JSON ARRAY. Each object: SEG, TER, QUA, QUI, SEX, SAB, DOM. Values: ["HH:MM", "HH:MM"] or "LIVRE". Input: ${descriptions.join(' | ')}` }] }],
-                            generationConfig: { responseMimeType: "application/json", temperature: 0.1 }
-                        })
-                    });
-                    if (response.status === 429) {
-                        addLog(`CHAVE ${currentKeyIndex + 1} ESGOTADA. Rotacionando...`, true);
-                        currentKeyIndex = (currentKeyIndex + 1) % keys.length;
-                        attempts++; continue;
-                    }
-                    if (!response.ok) { currentKeyIndex = (currentKeyIndex + 1) % keys.length; attempts++; continue; }
-                    const data = await response.json();
-                    return JSON.parse(data.candidates[0].content.parts[0].text);
-                } catch (e) { currentKeyIndex = (currentKeyIndex + 1) % keys.length; attempts++; }
-            }
-            return "PAUSE_ALL";
-        }
-
-        document.getElementById('uploadArea').onclick = () => document.getElementById('csvFile').click();
-        document.getElementById('stopBtn').onclick = () => { if(confirm("Baixar parcial?")) { isStopped = true; finish(); } };
-
-        function finish() {
-            finalJornadas["ID_FOLGA"] = { "NOME_JORNADA": "FOLGA", "PERIODOS": [{"TM_HORA_INICIO": "0000", "TM_HORA_FIM": "2400", "DESC_TIPO_HORA": "Hora Padrão"}], "id": "ID_FOLGA", "key": "ID_FOLGA" };
-            finalJornadas["ID_DSR"] = { "NOME_JORNADA": "DSR", "FL_DSR": "1", "PERIODOS": [{"TM_HORA_INICIO": "0000", "TM_HORA_FIM": "2400", "DESC_TIPO_HORA": "Hora Padrão"}], "id": "ID_DSR", "key": "ID_DSR" };
-            const blob = new Blob([JSON.stringify({ escalas: finalEscalas, jornadas: finalJornadas, horas_adicionais: {} }, null, 4)], { type: 'application/json' });
-            document.getElementById('downloadSection').classList.remove('hidden');
-            document.getElementById('downloadBtn').onclick = () => {
-                const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-                a.download = `importacao_rh_v75.json`; a.click();
-            };
-        }
-
-        document.getElementById('csvFile').addEventListener('change', async (event) => {
-            const file = event.target.files[0];
-            if (!file) return;
+        document.getElementById('csvFile').onchange = async (event) => {
+            const file = event.target.files[0]; if (!file) return;
             document.getElementById('fileNameDisplay').textContent = file.name;
+            isStopped = false; finalEscalas = []; finalJornadas = {}; jorMap = {};
             const startAt = parseInt(document.getElementById('startRow').value) - 1;
+            const preAssinaladasVal = document.getElementById('valPreAssinaladas').value ? document.getElementById('valPreAssinaladas').value.split(',').map(t => toHHMM(t.trim())) : [];
+
             const reader = new FileReader();
             reader.onload = async (e) => {
                 const allRows = e.target.result.split('\n').filter(l => l.trim() !== '').slice(1);
-                const rowsParaProcessar = allRows.slice(startAt);
                 document.getElementById('progressSection').classList.remove('hidden');
                 
-                const conf = { 
-                    carga: document.getElementById('flagCarga').value, 
-                    tipo: document.getElementById('flagTipoEscala').value,
-                    dsr_check: document.getElementById('flagForcarDSR').checked,
-                    compensavel: document.getElementById('flagCompensavel').value,
-                    pares: document.getElementById('flagBatidasPares').value === 'true', 
-                    auto: document.getElementById('flagBatidaAuto').value ? document.getElementById('flagBatidaAuto').value.split(',').map(t => toHHMM(t.trim())) : [] 
-                };
-
                 const batchSize = 20; 
-                for (let i = 0; i < rowsParaProcessar.length && !isStopped; i += batchSize) {
-                    const batchRaw = rowsParaProcessar.slice(i, i + batchSize);
-                    document.getElementById('statusText').textContent = "Processando (v75)...";
-                    let aiResults = await callGemini(batchRaw.map(r => r.split(',')[2] || ""));
-                    if (aiResults === "PAUSE_ALL") { document.getElementById('statusText').textContent = "AGUARDANDO RESET"; await delay(60000); i -= batchSize; continue; }
+                for (let i = startAt; i < allRows.length && !isStopped; i += batchSize) {
+                    const batchRows = allRows.slice(i, Math.min(i + batchSize, allRows.length));
+                    const dataBatch = batchRows.map(row => {
+                        const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                        return { cod: cols[0]?.trim(), nome: cols[1]?.replace(/"/g, '').trim(), desc: cols[2]?.replace(/"/g, '').trim() };
+                    });
 
-                    if (aiResults) {
+                    let aiResults = await callGeminiBatch(dataBatch.map(d => d.nome));
+                    if (aiResults === "PAUSE") { await delay(15000); i -= batchSize; continue; }
+
+                    if (Array.isArray(aiResults)) {
                         aiResults.forEach((res, idx) => {
-                            if (!batchRaw[idx]) return;
-                            const original = batchRaw[idx].split(',');
-                            const diasID = [], dias = ['SEG','TER','QUA','QUI','SEX','SAB','DOM'];
-                            if (conf.dsr_check && !dias.some(d => res[d] === "LIVRE")) res['DOM'] = "LIVRE";
-                            const livres = dias.filter(d => res[d] === "LIVRE");
+                            if (!dataBatch[idx]) return;
+                            const item = dataBatch[idx], times = res.h;
+                            const hKey = JSON.stringify(times);
+                            if (!jorMap[hKey]) {
+                                const k = generateKey(); jorMap[hKey] = k;
+                                finalJornadas[k] = { "NOME_JORNADA": times.join(' | '), "HORAS_CONTRATUAIS": times, "PERIODOS": generatePeriods(times), "PREASSINALA_SOMENTE_BATIDAS_PARES": document.getElementById('flagPreAssinaladas').value === 'true', "batida_automatica": preAssinaladasVal, "FL_COMPENSAVEL": document.getElementById('flagCompensavel').value === 'true' ? "1" : "0", "id": k, "key": k };
+                            }
+                            let jorArray = [];
+                            const n = item.nome.toLowerCase(), d = item.desc.toLowerCase();
+                            if (n.includes("12x36") || d.includes("12x36")) jorArray = [jorMap[hKey], "ID_FOLGA"];
+                            else if (n.includes("seg a sex") || d.includes("seg a sex")) jorArray = [jorMap[hKey], jorMap[hKey], jorMap[hKey], jorMap[hKey], jorMap[hKey], "ID_FOLGA", "ID_DSR"];
+                            else jorArray = [jorMap[hKey], jorMap[hKey], jorMap[hKey], jorMap[hKey], jorMap[hKey], jorMap[hKey], "ID_DSR"];
 
-                            dias.forEach(dia => {
-                                const val = res[dia];
-                                if (val === "LIVRE") {
-                                    if (livres.length === 1) diasID.push("ID_DSR");
-                                    else if (livres.length === 2) diasID.push(dia === livres[1] ? "ID_DSR" : "ID_FOLGA");
-                                    else diasID.push(dia === livres[livres.length-1] ? "ID_DSR" : "ID_FOLGA");
-                                } else if (Array.isArray(val)) {
-                                    const h = JSON.stringify(val);
-                                    if (!jorMap[h]) {
-                                        const k = generateKey(); jorMap[h] = k;
-                                        finalJornadas[k] = { "NOME_JORNADA": val.join(' | '), "HORAS_CONTRATUAIS": val, "FL_HORA_COMPENSAVEL": conf.compensavel, "PREASSINALA_SOMENTE_BATIDAS_PARES": conf.pares, "batida_automatica": conf.auto, "PERIODOS": generatePeriods(val), "id": k, "key": k };
-                                    }
-                                    diasID.push(jorMap[h]);
-                                }
-                            });
-                            // TEMPLATE DE ESCALA CONFORME MODELO (94)
                             finalEscalas.push({ 
-                                "NOME": original[1], "DESC_ESCALA": original[2]?.trim(), "COD": original[0], "carga_horaria": conf.carga, 
+                                "NOME": item.nome, "DESC_ESCALA": item.desc, "COD": item.cod, 
+                                "carga_horaria": document.getElementById('flagCarga').value, 
                                 "ignora_carga_horaria_e_tipo_funcionario": "ignora_carga_horaria_e_tipo_funcionario", 
-                                "TIPO": conf.tipo, "JORNADAS": diasID, "dsr": { "carga_horaria": "", "desconto": "" }, 
-                                "key": generateKey(), "id": generateKey() 
+                                "TIPO": (n.includes("12x36") ? "12X36" : "SEMANAL"), "JORNADAS": jorArray, "key": generateKey(), "id": generateKey() 
                             });
                         });
-                        const progressoReal = startAt + finalEscalas.length;
-                        document.getElementById('progressBar').style.width = Math.min(Math.round((progressoReal / allRows.length) * 100), 100) + "%";
-                        document.getElementById('percentDisplay').textContent = Math.min(Math.round((progressoReal / allRows.length) * 100), 100) + "%";
-                        document.getElementById('totalCounter').textContent = progressoReal + " / " + allRows.length;
-                        addLog(`Sucesso. Total: ${progressoReal}`);
+                        const globalTotal = i + dataBatch.length;
+                        document.getElementById('progressBar').style.width = Math.min(Math.round((globalTotal / allRows.length) * 100), 100) + "%";
+                        document.getElementById('percentDisplay').textContent = Math.min(Math.round((globalTotal / allRows.length) * 100), 100) + "%";
+                        document.getElementById('totalCounter').textContent = `${globalTotal} / ${allRows.length}`;
+                        document.getElementById('logArea').innerHTML += `<div>[${new Date().toLocaleTimeString()}] Lote concluído (até linha ${globalTotal}).</div>`;
                     }
-                    await delay(25000); 
+                    await delay(15000); 
                 }
-                if(!isStopped) finish();
+                document.getElementById('downloadSection').classList.remove('hidden');
+                document.getElementById('downloadBtn').onclick = () => {
+                    finalJornadas["ID_FOLGA"] = { "NOME_JORNADA": "FOLGA", "PERIODOS": [{"TM_HORA_INICIO": "0000", "TM_HORA_FIM": "2400", "DESC_TIPO_HORA": "Hora Padrão"}], "id": "ID_FOLGA", "key": "ID_FOLGA" };
+                    finalJornadas["ID_DSR"] = { "NOME_JORNADA": "DSR", "FL_DSR": "1", "PERIODOS": [{"TM_HORA_INICIO": "0000", "TM_HORA_FIM": "2400", "DESC_TIPO_HORA": "Hora Padrão"}], "id": "ID_DSR", "key": "ID_DSR" };
+                    const blob = new Blob([JSON.stringify({ escalas: finalEscalas, jornadas: finalJornadas, horas_adicionais: {} }, null, 4)], { type: 'application/json' });
+                    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `rh_v103_final.json`; a.click();
+                };
             };
             reader.readAsText(file);
-        });
+        };
+        document.getElementById('stopBtn').onclick = () => { isStopped = true; };
     </script>
 </body>
 </html>
