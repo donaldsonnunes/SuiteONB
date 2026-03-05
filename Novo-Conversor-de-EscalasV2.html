@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Conversor RH V133 - Master Oficial</title>
+    <title>Conversor RH V134 - Master Tag Fix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
@@ -25,24 +25,22 @@
         
         <aside class="lg:col-span-1 space-y-4">
             <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-2xl sticky top-4 space-y-4 overflow-y-auto max-h-[95vh] scroll-custom">
-                <h2 class="text-xs font-black text-blue-400 uppercase border-b border-slate-700 pb-2 italic text-center text-[10px]">Painel de Controle V133</h2>
+                <h2 class="text-xs font-black text-blue-400 uppercase border-b border-slate-700 pb-2 italic text-center text-[10px]">Configurações V134</h2>
                 
                 <div id="keyPool" class="space-y-1">
-                    <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest text-center block mb-2 italic text-[8px]">Pool de 8 API Keys (Gemini 2.0)</label>
+                    <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest text-center block mb-2 italic">Chaves API (Gemini)</label>
                     <input type="password" id="key0" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 01">
                     <input type="password" id="key1" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 02">
                     <input type="password" id="key2" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 03">
                     <input type="password" id="key3" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 04">
                     <input type="password" id="key4" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 05">
                     <input type="password" id="key5" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 06">
-                    <input type="password" id="key6" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 07">
-                    <input type="password" id="key7" class="key-input w-full p-2 bg-slate-900 border border-slate-700 rounded text-amber-400" placeholder="Chave 08">
                 </div>
 
                 <div class="pt-2 border-t border-slate-700 space-y-3">
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="text-[9px] font-bold text-slate-500 uppercase">Início Dados</label>
+                            <label class="text-[9px] font-bold text-slate-500 uppercase">Linha Inicial</label>
                             <input type="number" id="startRow" value="2" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-white font-bold text-xs">
                         </div>
                         <div>
@@ -51,7 +49,7 @@
                         </div>
                     </div>
                 </div>
-                <button onclick="resetSystem(true)" class="w-full py-2 bg-slate-700 hover:bg-slate-600 rounded text-[10px] uppercase font-bold text-slate-400 border border-slate-600 transition-all">Limpar Tudo</button>
+                <button onclick="resetSystem(true)" class="w-full py-2 bg-slate-700 hover:bg-slate-600 rounded text-[10px] uppercase font-bold text-slate-400 border border-slate-600">Limpar Tudo</button>
             </div>
         </aside>
 
@@ -59,7 +57,7 @@
             <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-2xl text-center">
                 <div id="uploadArea" class="border-2 border-dashed border-slate-600 rounded-2xl p-16 hover:border-emerald-500 hover:bg-slate-700/50 cursor-pointer group transition-all" onclick="document.getElementById('csvFile').click()">
                     <input type="file" id="csvFile" accept=".csv" class="hidden">
-                    <div class="text-slate-300 font-black text-3xl uppercase italic group-hover:text-emerald-400">Processar testeV3 de Escalas</div>
+                    <div class="text-slate-300 font-black text-3xl uppercase italic group-hover:text-emerald-400">Processar Matriz SaaS</div>
                     <div id="fileNameDisplay" class="text-blue-400 font-bold mt-4 h-4 text-xs uppercase font-mono tracking-tighter"></div>
                 </div>
 
@@ -67,8 +65,8 @@
                     <div class="flex justify-between items-end">
                         <div class="space-y-1">
                             <span id="statusText" class="text-sm font-bold text-emerald-400 uppercase italic">Aguardando...</span>
-                            <div id="timerDisplay" class="text-[10px] wait-timer hidden uppercase italic">Pausa de 15s para estabilizar RPM...</div>
-                            <button id="stopBtn" onclick="stopProcess()" class="block text-[10px] mt-2 bg-red-600 hover:bg-red-700 text-white font-black px-6 py-2 rounded-full uppercase shadow-lg transition-all active:scale-95">Interromper</button>
+                            <div id="timerDisplay" class="text-[10px] wait-timer hidden uppercase italic">Proteção de RPM: Pausa de 15s...</div>
+                            <button id="stopBtn" onclick="stopProcess()" class="block text-[10px] mt-2 bg-red-600 hover:bg-red-700 text-white font-black px-6 py-2 rounded-full uppercase shadow-lg transition-all active:scale-95">Parar Processo</button>
                         </div>
                         <span id="percentDisplay" class="text-6xl font-black text-white">0%</span>
                     </div>
@@ -80,14 +78,14 @@
 
             <div class="bg-black/50 rounded-2xl p-6 border border-slate-800 shadow-inner">
                 <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4 text-[10px]">
-                    <h3 class="font-bold text-slate-500 uppercase italic">Monitor de Auditoria SaaS</h3>
+                    <h3 class="font-bold text-slate-500 uppercase italic">Monitor de Atividade</h3>
                     <span id="totalCounter" class="text-blue-500 font-black font-mono text-sm">0 / 0</span>
                 </div>
-                <div id="logArea" class="h-64 overflow-y-auto space-y-1 text-[10px] font-mono scroll-custom italic"></div>
+                <div id="logArea" class="h-64 overflow-y-auto space-y-1 text-[10px] font-mono scroll-custom"></div>
             </div>
 
             <div id="downloadSection" class="hidden flex justify-center pb-12">
-                <button id="downloadBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-24 py-8 rounded-full font-black uppercase text-xl shadow-2xl transition-all scale-105">Baixar JSON RH Master</button>
+                <button id="downloadBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-24 py-8 rounded-full font-black uppercase text-xl shadow-2xl transition-all scale-105">Baixar JSON RH</button>
             </div>
         </main>
 
@@ -96,31 +94,31 @@
                 <h2 class="text-xs font-black text-emerald-400 uppercase border-b border-slate-700 pb-2 italic text-center">Ajuda & Lógicas</h2>
                 
                 <div class="instruction-box">
-                    <p class="font-black text-blue-400 mb-1 uppercase text-[9px]">1. Mapeamento testeV3</p>
+                    <p class="font-black text-blue-400 mb-1 uppercase text-[9px]">1. Mapeamento CSV</p>
                     <ul class="text-[9px] text-slate-400 space-y-1">
-                        <li><b>Início:</b> Linha 2 (pula cabeçalho único).</li>
-                        <li><b>Coluna C:</b> Estrutura/Jornada (Fonte Principal).</li>
+                        <li><b>Início:</b> Linha 2 (conforme testeV3).</li>
+                        <li><b>Coluna C:</b> Estrutura (2 ou 4 batidas).</li>
                         <li><b>Coluna G:</b> Pré-Assinalada (Sim/Não).</li>
                     </ul>
                 </div>
 
                 <div class="instruction-box">
-                    <p class="font-black text-blue-400 mb-1 uppercase text-[9px]">2. Diferenciação de IDs</p>
-                    <p class="text-slate-300 italic">Jornadas com horários idênticos mas Coluna G diferente (Sim vs Não) geram IDs exclusivos para garantir a configuração correta no RH.</p>
+                    <p class="font-black text-blue-400 mb-1 uppercase text-[9px]">2. Regra de IDs Únicos</p>
+                    <p class="text-slate-300 italic">Jornadas com horários iguais mas Coluna G diferente geram IDs distintos no JSON.</p>
                 </div>
 
                 <div class="instruction-box">
-                    <p class="font-black text-blue-400 mb-1 uppercase text-[9px]">3. Regras de Ciclo</p>
+                    <p class="font-black text-blue-400 mb-1 uppercase text-[9px]">3. Ciclos Específicos</p>
                     <ul class="list-disc ml-4 space-y-1 text-slate-400 text-[9px]">
-                        <li><b>5x1:</b> Ciclo estrito de 6 dias (5 Trab + 1 DSR).</li>
-                        <li><b>5x2 / Seg a Sex:</b> Ciclo de 7 dias (5 Trab + 1 Folga + 1 DSR).</li>
-                        <li><b>14 Dias:</b> Sábados alternados (2 semanas).</li>
+                        <li><b>5x1:</b> Ciclo de 6 dias (5T + 1DSR).</li>
+                        <li><b>5x2 / Seg-Sex:</b> 7 dias (5T + 1F + 1DSR).</li>
+                        <li><b>14 Dias:</b> Sábados alternados.</li>
                     </ul>
                 </div>
 
                 <div class="instruction-box">
-                    <p class="font-black text-blue-400 mb-1 uppercase text-[9px]">4. Filtro de Segurança</p>
-                    <p class="text-slate-300">A IA processa apenas 2 ou 4 batidas. Cargas extras (ex: 7:20) são automaticamente ignoradas.</p>
+                    <p class="font-black text-blue-400 mb-1 uppercase text-[9px]">4. Tags Automáticas</p>
+                    <p class="text-slate-300">A tag <code class="text-emerald-400 text-[8px]">ignora_carga_horaria_e_tipo_funcionario</code> é injetada por padrão após a carga horária.</p>
                 </div>
             </div>
         </aside>
@@ -145,7 +143,7 @@
             if(active) active.classList.add('key-active');
         }
 
-        function stopProcess() { isStopped = true; addLog("USUÁRIO INTERROMPEU O PROCESSO.", "error"); }
+        function stopProcess() { isStopped = true; addLog("PARADA PELO USUÁRIO.", "error"); }
 
         function resetSystem(manual = false) {
             finalEscalas = []; finalJornadas = {}; jorMap = {}; isStopped = false; currentKeyIndex = 0;
@@ -161,21 +159,23 @@
         }
 
         async function callGeminiBatch(texts) {
-            const keys = [0,1,2,3,4,5,6,7].map(id => document.getElementById(`key${id}`).value.trim()).filter(v => v !== "");
+            const keys = [0,1,2,3,4,5].map(id => document.getElementById(`key${id}`).value.trim()).filter(v => v !== "");
             if (keys.length === 0) return null;
             updateKeyVisual();
             const apiKey = keys[currentKeyIndex % keys.length];
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-            const prompt = `Return a JSON ARRAY with ${texts.length} objects. Each MUST have "h": ["HH:MM", ...]. Input: ${JSON.stringify(texts)}. Rule: Only extract 2 or 4 timestamps per item.`;
+            const prompt = `Return a JSON ARRAY with ${texts.length} objects. Each MUST have "h": ["HH:MM", ...]. Input: ${JSON.stringify(texts)}. Rule: Only 2 or 4 timestamps.`;
             try {
                 const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: 0.1 } }) });
-                if (response.status === 429) { 
-                    addLog(`Cota da Chave ${currentKeyIndex + 1} atingida. Pulando para próxima...`, "error");
-                    currentKeyIndex = (currentKeyIndex + 1) % keys.length; 
-                    return "ROTATE"; 
-                }
+                if (response.status === 429) { addLog(`Troca de Chave...`, "error"); currentKeyIndex++; return "ROTATE"; }
                 const data = await response.json(); return JSON.parse(data.candidates[0].content.parts[0].text);
             } catch (e) { return null; }
+        }
+
+        function cleanDescription(text) {
+            const timePattern = /\b([01]\d|2[0-3]):[0-5]\d\b/g;
+            const matches = text.match(timePattern) || [];
+            return matches.slice(0, 4).join(" | ");
         }
 
         function generatePeriods(times) {
@@ -205,19 +205,17 @@
             reader.onload = async (e) => {
                 const lines = e.target.result.split(/\r?\n/).filter(l => l.trim() !== '');
                 const allRows = lines.slice(startAt);
-                addLog(`Processando ${allRows.length} escalas...`, "info");
+                addLog(`Iniciando análise de ${allRows.length} escalas...`, "info");
 
                 const batchSize = 20;
                 for (let i = 0; i < allRows.length && !isStopped; ) {
                     const batchRows = allRows.slice(i, Math.min(i + batchSize, allRows.length));
                     const dataBatch = batchRows.map(row => {
                         const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                        // Filtro HH:MM estrito
-                        const cleanD = (cols[2] || "").match(/\b([01]\d|2[0-3]):[0-5]\d\b/g)?.slice(0,4).join(" | ") || "";
-                        return { cod: cols[0]?.trim(), nome: cols[1]?.replace(/"/g, '').trim(), desc: cols[2]?.replace(/"/g, '').trim(), cleanD, colG: (cols[6] || "").replace(/"/g, '').trim().toLowerCase() };
+                        return { cod: cols[0]?.trim(), nome: cols[1]?.replace(/"/g, '').trim(), desc: cols[2]?.replace(/"/g, '').trim(), cleanD: cleanDescription(cols[2] || ""), colG: (cols[6] || "").replace(/"/g, '').trim().toLowerCase() };
                     });
 
-                    document.getElementById('statusText').textContent = `Lote ${Math.floor(i/batchSize)+1} em análise...`;
+                    document.getElementById('statusText').textContent = `Lote ${Math.floor(i/batchSize)+1}...`;
                     let aiResults = await callGeminiBatch(dataBatch.map(d => d.cleanD));
                     if (aiResults === "ROTATE") { await delay(2000); continue; }
 
@@ -226,34 +224,23 @@
                             try {
                                 if (!dataBatch[idx] || !res || !Array.isArray(res.h)) return;
                                 const item = dataBatch[idx], times = res.h.slice(0, 4).filter(t => t && t !== "00:00");
-                                
-                                // ID ÚNICO POR HORÁRIO + STATUS PRÉ-ASSINALADA
                                 let isPre = item.colG === "sim" && times.length >= 4;
                                 const hybridKey = JSON.stringify(times) + "_" + isPre;
                                 
                                 if (!jorMap[hybridKey]) {
                                     const k = generateKey(); jorMap[hybridKey] = k;
-                                    finalJornadas[k] = { 
-                                        "NOME_JORNADA": times.join(' | ') + (isPre ? " (PA)" : ""), 
-                                        "HORAS_CONTRATUAIS": times, "PERIODOS": generatePeriods(times), 
-                                        "FL_HORA_COMPENSAVEL": "1", "TM_TOLERANCIA_CARGA_POSITIVA": "0010", 
-                                        "PREASSINALA_SOMENTE_BATIDAS_PARES": isPre, 
-                                        "batida_automatica": isPre ? [toHHMM(times[1]), toHHMM(times[2])] : [], 
-                                        "id": generateKey(), "key": k 
-                                    };
+                                    finalJornadas[k] = { "NOME_JORNADA": times.join(' | ') + (isPre ? " (PA)" : ""), "HORAS_CONTRATUAIS": times, "PERIODOS": generatePeriods(times), "FL_HORA_COMPENSAVEL": "1", "TM_TOLERANCIA_CARGA_POSITIVA": "0010", "PREASSINALA_SOMENTE_BATIDAS_PARES": isPre, "batida_automatica": isPre ? [toHHMM(times[1]), toHHMM(times[2])] : [], "id": generateKey(), "key": k };
                                 }
 
                                 let jorArray = [];
                                 const d = (item.desc || "").toUpperCase();
                                 const n = (item.nome || "").toUpperCase();
 
-                                // LÓGICAS DE CICLO V133
                                 if (d.includes("14 DIAS")) {
                                     jorArray = [jorMap[hybridKey], jorMap[hybridKey], jorMap[hybridKey], jorMap[hybridKey], jorMap[hybridKey], "ID_FOLGA", "ID_DSR", jorMap[hybridKey], jorMap[hybridKey], jorMap[hybridKey], jorMap[hybridKey], jorMap[hybridKey], jorMap[hybridKey], "ID_DSR"];
                                 } else if (d.includes("5X1") || d.includes("6 DIAS") || n.includes("5X1")) {
-                                    // Ciclo estrito de 6 dias
                                     jorArray = [jorMap[hybridKey], jorMap[hybridKey], jorMap[hybridKey], jorMap[hybridKey], jorMap[hybridKey], "ID_DSR"];
-                                } else if (d.includes("5X2") || d.includes("SEG A SEX") || n.includes("5X2") || n.includes("SAB E DOM")) {
+                                } else if (d.includes("5X2") || d.includes("SEG A SEX") || n.includes("5X2")) {
                                     jorArray = [jorMap[hybridKey], jorMap[hybridKey], jorMap[hybridKey], jorMap[hybridKey], jorMap[hybridKey], "ID_FOLGA", "ID_DSR"];
                                 } else if (d.includes("12X36")) {
                                     jorArray = [jorMap[hybridKey], "ID_FOLGA"];
@@ -268,7 +255,18 @@
                                     }
                                 }
 
-                                finalEscalas.push({ "NOME": item.nome, "DESC_ESCALA": item.desc, "COD": item.cod, "carga_horaria": "220", "ignora_carga_horaria_e_tipo_funcionario": "ignora_carga_horaria_e_tipo_funcionario", "TIPO": (jorArray.length !== 7) ? "CICLO" : "SEMANAL", "JORNADAS": jorArray, "key": generateKey(), "id": generateKey() });
+                                // TAG FIXA INJETADA AQUI
+                                finalEscalas.push({ 
+                                    "NOME": item.nome, 
+                                    "DESC_ESCALA": item.desc, 
+                                    "COD": item.cod, 
+                                    "carga_horaria": document.getElementById('flagCarga').value, 
+                                    "ignora_carga_horaria_e_tipo_funcionario": "ignora_carga_horaria_e_tipo_funcionario",
+                                    "TIPO": (jorArray.length !== 7) ? "CICLO" : "SEMANAL", 
+                                    "JORNADAS": jorArray, 
+                                    "key": generateKey(), 
+                                    "id": generateKey() 
+                                });
                             } catch (err) {}
                         });
                         i += batchSize;
@@ -276,18 +274,17 @@
                         document.getElementById('progressBar').style.width = perc + "%";
                         document.getElementById('percentDisplay').textContent = perc + "%";
                         document.getElementById('totalCounter').textContent = `${Math.min(i, allRows.length)} / ${allRows.length}`;
-                        addLog(`Processado até linha ${i}.`, "success");
                         if (i < allRows.length) { document.getElementById('timerDisplay').classList.remove('hidden'); await delay(15000); document.getElementById('timerDisplay').classList.add('hidden'); }
                     }
                 }
-                document.getElementById('statusText').textContent = "Processamento Concluído.";
+                document.getElementById('statusText').textContent = "Concluído!";
                 document.getElementById('downloadSection').classList.remove('hidden');
                 addLog("Análise finalizada. JSON Master pronto.", "success");
                 document.getElementById('downloadBtn').onclick = () => {
                     finalJornadas["ID_FOLGA"] = { "NOME_JORNADA": "FOLGA", "PERIODOS": [{"TM_HORA_INICIO": "0000", "TM_HORA_FIM": "2400", "DESC_TIPO_HORA": "Hora Padrão"}], "id": "ID_FOLGA", "key": "ID_FOLGA" };
                     finalJornadas["ID_DSR"] = { "NOME_JORNADA": "DSR", "FL_DSR": "1", "PERIODOS": [{"TM_HORA_INICIO": "0000", "TM_HORA_FIM": "2400", "DESC_TIPO_HORA": "Hora Padrão"}], "id": "ID_DSR", "key": "ID_DSR" };
                     const blob = new Blob([JSON.stringify({ escalas: finalEscalas, jornadas: finalJornadas, horas_adicionais: {} }, null, 4)], { type: 'application/json' });
-                    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `rh_master_v133.json`; a.click();
+                    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `rh_master_v134.json`; a.click();
                 };
             };
             reader.readAsText(file);
