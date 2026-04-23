@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Ahgora - Remoção via Proxy CORS</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; margin: 40px; background-color: #f4f7f6; }
+        .container { max-width: 850px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e1e4e8; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; color: #444; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .upload-section { border: 2px dashed #007bff; padding: 30px; text-align: center; background: #f0f7ff; border-radius: 8px; margin-bottom: 20px; }
+        pre { background: #2d2d2d; color: #ccc; padding: 15px; border-radius: 6px; overflow-x: auto; max-height: 250px; font-size: 12px; }
+        .btn-delete { background: #e74c3c; color: white; border: none; padding: 15px; cursor: pointer; border-radius: 5px; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; }
+        .btn-delete:hover { background: #c0392b; }
+        .btn-delete:disabled { background: #bdc3c7; cursor: not-allowed; }
+        #status { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; font-weight: 500; white-space: pre-wrap; }
+        .info-cors { font-size: 12px; color: #666; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🗑️ Ahgora: Remoção de Usuários</h2>
+    <p class="info-cors">⚠️ Certifique-se de ter ativado o acesso em: <u>cors-anywhere.herokuapp.com/corsdemo</u></p>
+    
+    <div class="auth-grid">
+        <div>
+            <label>Usuário API (Ahgora):</label>
+            <input type="text" id="authUser" placeholder="Usuário">
+        </div>
+        <div>
+            <label>Senha API (Ahgora):</label>
+            <input type="password" id="authPass" placeholder="******">
+        </div>
+    </div>
+
+    <div class="upload-section">
+        <label>1. Carregar arquivo CSV</label>
+        <input type="file" id="csvFile" accept=".csv" style="margin-top: 10px;">
+    </div>
+
+    <div id="previewArea" style="display:none;">
+        <h3>2. Confirmar dados para envio:</h3>
+        <pre id="jsonPreview"></pre>
+        <button class="btn-delete" id="btnEnviar">EFETUAR REMOÇÃO EM MASSA</button>
+    </div>
+
+    <div id="status"></div>
+</div>
+
+<script>
+    // URL com o prefixo do Proxy para evitar erro de CORS
+    const PROXY_URL = 'https://cors-anywhere.herokuapp.com/';
+    const TARGET_URL = 'https://api.ahgora.com.br/users';
+    
+    const fileInput = document.getElementById('csvFile');
+    const previewArea = document.getElementById('previewArea');
+    const jsonPreview = document.getElementById('jsonPreview');
+    const btnEnviar = document.getElementById('btnEnviar');
+    const statusDiv = document.getElementById('status');
+
+    let payload = [];
+
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const lines = event.target.result.trim().split('\n');
+            // Mapeamento baseado no seu modelo JSON
+            payload = lines.slice(1).map(line => {
+                const c = line.split(',').map(val => val.trim());
+                if(c[0] === "") return null;
+                return {
+                    "email": c[0] || "",
+                    "perfil": c[1] || "",
+                    "localizacao": [c[2] || ""],
+                    "login_saml": c[3] || "",
+                    "nome": c[4] || "",
+                    "perfilNovo": c[5] || "",
+                    "remover": "REMOVER"
+                };
+            }).filter(item => item !== null);
+
+            jsonPreview.textContent = JSON.stringify(payload, null, 2);
+            previewArea.style.display = 'block';
+            statusDiv.style.display = 'none';
+        };
+        reader.readAsText(file);
+    });
+
+    btnEnviar.addEventListener('click', async () => {
+        const user = document.getElementById('authUser').value;
+        const pass = document.getElementById('authPass').value;
+
+        if (!user || !pass) {
+            alert("Por favor, preencha o Usuário e a Senha da API Ahgora.");
+            return;
+        }
+
+        if (!confirm(`Deseja realmente REMOVER ${payload.length} usuários do sistema?`)) return;
+
+        // Gerar credenciais Basic Auth
+        const credentials = btoa(`${user}:${pass}`);
+        
+        btnEnviar.disabled = true;
+        statusDiv.style.display = 'block';
+        statusDiv.style.background = '#fff3cd';
+        statusDiv.style.color = '#856404';
+        statusDiv.textContent = "⏳ Enviando através do proxy... Aguarde.";
+
+        try {
+            const response = await fetch(PROXY_URL + TARGET_URL, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Basic ${credentials}`,
+                    'X-Requested-With': 'XMLHttpRequest' // Necessário para o CORS Anywhere
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                statusDiv.style.background = '#d4edda';
+                statusDiv.style.color = '#155724';
+                statusDiv.textContent = "✅ SUCESSO!\nA API da Ahgora processou os dados.\nResposta: " + JSON.stringify(data);
+            } else {
+                throw new Error(data.message || `Erro ${response.status}: ${response.statusText}`);
+            }
+        } catch (error) {
+            statusDiv.style.background = '#f8d7da';
+            statusDiv.style.color = '#721c24';
+            statusDiv.textContent = "❌ ERRO:\n" + error.message + "\n\nVerifique se ativou o acesso no site do CORS Anywhere ou se as credenciais estão corretas.";
+        } finally {
+            btnEnviar.disabled = false;
+        }
+    });
+</script>
+
+</body>
+</html>
