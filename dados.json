@@ -1,0 +1,18 @@
+{
+  "modulos": [
+    "Multiselect",
+    "Robojob",
+    "Escalas",
+    "Integração"
+  ],
+  "praticas": [
+    {
+      "id": 1,
+      "modulo": "Multiselect",
+      "titulo": "Selecionar muitos registros em campo dropdown",
+      "problema": "Selecionar todos registros não funciona somente selecionando 1 a 1. Fazer manualmente pode gerar erro e demorar muito.",
+      "solucao": "Executar javascript:\n\n(async function () {\n\n    console.log('Você tem 5 segundos para abrir o dropdown...');\n\n    await new Promise(r => setTimeout(r, 5000));\n\n    const container =\n        document.querySelector('.MuiAutocomplete-listbox') ||\n        document.querySelector('[role=\"listbox\"]');\n\n    if (!container) {\n        console.error('Container do dropdown não encontrado');\n        return;\n    }\n\n    let ultimoScroll = -1;\n\n    while (container.scrollTop !== ultimoScroll) {\n\n        ultimoScroll = container.scrollTop;\n\n        // Marca checkboxes visíveis\n        document.querySelectorAll('input[type=\"checkbox\"]').forEach(el => {\n            if (!el.checked) {\n                el.click();\n            }\n        });\n\n        // Rola o dropdown\n        container.scrollTop += 500;\n\n        // Aguarda renderização\n        await new Promise(r => setTimeout(r, 300));\n    }\n\n    // Última rodada\n    document.querySelectorAll('input[type=\"checkbox\"]').forEach(el => {\n        if (!el.checked) {\n            el.click();\n        }\n    });\n\n    console.log('Todos selecionados');\n\n})();",
+      "data": "28/05/2026 (Modificado)"
+    }
+  ]
+}

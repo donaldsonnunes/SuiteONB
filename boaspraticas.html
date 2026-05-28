@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repositório de Boas Práticas - Auto Save</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+    <div class="flex h-screen overflow-hidden">
+        <div class="w-64 bg-slate-900 text-white p-6 flex flex-col justify-between">
+            <div>
+                <h1 class="text-xl font-bold mb-6 flex items-center gap-2">💡 MyPractices</h1>
+                
+                <div id="areaCriarModulo" class="mb-6 opacity-40 pointer-events-none transition-opacity">
+                    <p class="text-xs font-bold text-slate-400 uppercase mb-2">Criar Novo Módulo</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="novoModuloInput" placeholder="Ex: Mobile" class="w-full bg-slate-800 text-sm p-2 rounded border border-slate-700 focus:outline-none focus:border-indigo-500">
+                        <button onclick="criarModulo()" class="bg-indigo-600 hover:bg-indigo-700 px-3 rounded font-bold text-lg">+</button>
+                    </div>
+                </div>
+
+                <p class="text-xs font-bold text-slate-400 uppercase mb-2">Navegar por Módulos</p>
+                <nav id="listaModulosMenu" class="space-y-1 max-h-[45vh] overflow-y-auto pr-1">
+                    </nav>
+            </div>
+            
+            <div class="border-t border-slate-700 pt-4 space-y-2">
+                <span class="text-xs font-bold uppercase text-slate-400 block">Arquivo Físico</span>
+                <div id="statusConexao" class="text-xs text-amber-400 flex items-center gap-1.5 mb-2">🟠 Não conectado</div>
+                <button onclick="vincularArquivoJSON()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-xs py-2.5 px-3 rounded font-medium transition text-center block shadow-sm">
+                    🔗 Abrir seu dados.json
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-1 flex flex-col overflow-y-auto p-8">
+            
+            <div id="avisoConexao" class="bg-amber-50 border border-amber-200 p-4 rounded-xl mb-6 text-amber-800 text-sm">
+                ⚠️ Para começar, clique no botão <b>"Abrir seu dados.json"</b> na barra lateral e selecione o arquivo da sua pasta.
+            </div>
+
+            <div id="areaForm" class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8 opacity-40 pointer-events-none transition-opacity duration-300">
+                <h2 class="text-lg font-bold mb-4 text-gray-700">Registrar Nova Boa Prática</h2>
+                <form id="formPratica" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Módulo Vinculado</label>
+                        <select id="moduloSelect" class="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-slate-500 outline-none"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Título Resumido</label>
+                        <input type="text" id="titulo" placeholder="O que foi feito?" class="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-slate-500 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Qual era o Problema?</label>
+                        <textarea id="problema" rows="2" placeholder="Descreva o cenário ruim..." class="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-slate-500 outline-none" required></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Qual foi a Solução?</label>
+                        <textarea id="solucao" rows="2" placeholder="Como isso resolveu o problema..." class="w-full p-2.5 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-slate-500 outline-none" required></textarea>
+                    </div>
+                    <div class="md:col-span-2 flex justify-between items-center pt-2">
+                        <span class="text-xs text-emerald-600 bg-emerald-50 px-3 py-1 rounded border border-emerald-200">
+                            🟢 Modo de gravação direta ativado. Sem copiar e colar!
+                        </span>
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-6 rounded-lg transition shadow-sm">
+                            💾 Gravar no Arquivo
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="flex-1">
+                <h2 class="text-xl font-bold mb-4 text-gray-700 flex items-center gap-2">
+                    Práticas em <span id="nomeModuloAtual" class="text-indigo-600">Todos</span> 
+                    <span id="contador" class="text-sm bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full">0</span>
+                </h2>
+                <div id="listaPraticas" class="space-y-3">
+                    <p class="text-gray-400 italic">Aguardando conexão com o arquivo dados.json...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let fileHandle = null;
+        let bancoDados = { modulos: [], praticas: [] };
+        let filtroAtual = 'Todos';
+
+        // 1. Abre a janela nativa para o usuário escolher o arquivo dados.json
+        async function vincularArquivoJSON() {
+            try {
+                [fileHandle] = await window.showOpenFilePicker({
+                    types: [{
+                        description: 'Arquivo JSON do Repositório',
+                        accept: { 'application/json': ['.json'] }
+                    }],
+                    multiple: false
+                });
+
+                // Altera a interface liberando o uso
+                document.getElementById('statusConexao').innerHTML = `🟢 Conectado: <b>${fileHandle.name}</b>`;
+                document.getElementById('statusConexao').className = "text-xs text-emerald-400 flex items-center gap-1.5 mb-2";
+                document.getElementById('avisoConexao').classList.add('hidden');
+                document.getElementById('areaForm').classList.remove('opacity-40', 'pointer-events-none');
+                document.getElementById('areaCriarModulo').classList.remove('opacity-40', 'pointer-events-none');
+
+                // Lê o conteúdo inicial
+                await lerArquivo();
+            } catch (err) {
+                console.log('Seleção cancelada pelo usuário.');
+            }
+        }
+
+        // 2. Lê os dados de dentro do arquivo selecionado
+        async function lerArquivo() {
+            const file = await fileHandle.getFile();
+            const conteudo = await file.text();
+            try {
+                bancoDados = conteudo ? JSON.parse(conteudo) : { modulos: [], praticas: [] };
+                if(!bancoDados.modulos) bancoDados.modulos = [];
+                if(!bancoDados.praticas) bancoDados.praticas = [];
+            } catch (e) {
+                bancoDados = { modulos: [], praticas: [] };
+            }
+            atualizarInterfaceModulos();
+            renderizarCards();
+        }
+
+        // 3. GRAVAÇÃO REAL E DIRETA NO ARQUIVO JSON
+        async function salvarNoArquivoFisico() {
+            if (!fileHandle) return;
+            try {
+                // Abre o fluxo de escrita (O navegador pode pedir uma confirmação de permissão na tela na primeira gravação)
+                const writable = await fileHandle.createWritable();
+                await writable.write(JSON.stringify(bancoDados, null, 2));
+                await writable.close();
+                renderizarCards();
+            } catch (erro) {
+                alert("Erro ao gravar no arquivo. Certifique-se de dar permissão de escrita se o navegador solicitar.");
+            }
+        }
+
+        function atualizarInterfaceModulos() {
+            const menu = document.getElementById('listaModulosMenu');
+            const select = document.getElementById('moduloSelect');
+            
+            menu.innerHTML = `<button onclick="filtrarModulo('Todos')" id="btn-Todos" class="w-full text-left py-2 px-4 rounded hover:bg-slate-800 transition font-medium ${filtroAtual === 'Todos' ? 'bg-slate-800' : ''}">📦 Todos os Módulos</button>`;
+            
+            bancoDados.modulos.forEach(mod => {
+                const ativo = filtroAtual === mod ? 'bg-slate-800' : '';
+                menu.innerHTML += `<button onclick="filtrarModulo('${mod}')" id="btn-${mod}" class="w-full text-left py-2 px-4 rounded hover:bg-slate-800 transition truncate ${ativo}">📁 ${mod}</button>`;
+            });
+
+            select.innerHTML = '';
+            bancoDados.modulos.forEach(mod => {
+                select.innerHTML += `<option value="${mod}">${mod}</option>`;
+            });
+        }
+
+        async function criarModulo() {
+            const input = document.getElementById('novoModuloInput');
+            const novoNome = input.value.trim();
+            if (!novoNome || bancoDados.modulos.includes(novoNome)) return;
+
+            bancoDados.modulos.push(novoNome);
+            input.value = '';
+            atualizarInterfaceModulos();
+            await salvarNoArquivoFisico();
+        }
+
+        function filtrarModulo(modulo) {
+            filtroAtual = modulo;
+            document.getElementById('nomeModuloAtual').innerText = modulo;
+            document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('bg-slate-800'));
+            document.getElementById(`btn-${modulo}`).classList.add('bg-slate-800');
+            renderizarCards();
+        }
+
+        function renderizarCards() {
+            const lista = document.getElementById('listaPraticas');
+            lista.innerHTML = '';
+
+            const filtradas = filtroAtual === 'Todos' 
+                ? bancoDados.praticas 
+                : bancoDados.praticas.filter(p => p.modulo === filtroAtual);
+
+            document.getElementById('contador').innerText = filtradas.length;
+
+            if (filtradas.length === 0) {
+                lista.innerHTML = `<p class="text-gray-400 italic p-2">Nenhum registro encontrado.</p>`;
+                return;
+            }
+
+            [...filtradas].reverse().forEach(pratica => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-200";
+                card.id = `card-${pratica.id}`;
+                card.innerHTML = `
+                    <div onclick="alternarDetalhes(${pratica.id})" class="p-4 flex justify-between items-center cursor-pointer select-none bg-white hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-3">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700 uppercase">${pratica.modulo}</span>
+                            <h3 id="txt-titulo-${pratica.id}" class="font-bold text-gray-800 text-sm md:text-base">${pratica.titulo}</h3>
+                        </div>
+                        <div class="flex items-center gap-4 text-xs text-gray-400">
+                            <span>${pratica.data}</span>
+                            <span id="seta-${pratica.id}" class="transform transition-transform duration-200 font-bold">▼</span>
+                        </div>
+                    </div>
+                    
+                    <div id="detalhe-${pratica.id}" class="hidden border-t border-gray-100 bg-slate-50 p-4">
+                        <div id="visualizacao-${pratica.id}" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-white p-3 rounded-lg border border-red-100 shadow-sm">
+                                    <span class="text-xs font-bold text-red-500 uppercase block mb-1">❌ Problema:</span>
+                                    <p id="txt-problema-${pratica.id}" class="text-sm text-gray-600 whitespace-pre-line">${pratica.problema}</p>
+                                </div>
+                                <div class="bg-white p-3 rounded-lg border border-emerald-100 shadow-sm">
+                                    <span class="text-xs font-bold text-emerald-600 uppercase block mb-1">✅ Solução:</span>
+                                    <p id="txt-solucao-${pratica.id}" class="text-sm text-gray-600 whitespace-pre-line">${pratica.solucao}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <button onclick="entrarModoEdicao(${pratica.id})" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-1.5 px-4 rounded transition">✏️ Editar Registro</button>
+                            </div>
+                        </div>
+
+                        <div id="formulario-edicao-${pratica.id}" class="hidden space-y-3 bg-white p-4 rounded-lg border border-gray-300">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Título</label>
+                                <input type="text" id="edit-input-titulo-${pratica.id}" class="w-full p-2 border rounded font-semibold text-sm">
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-red-400 uppercase mb-1">Problema</label>
+                                    <textarea id="edit-input-problema-${pratica.id}" rows="4" class="w-full p-2 border rounded text-sm text-gray-600"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-emerald-500 uppercase mb-1">Solução</label>
+                                    <textarea id="edit-input-solucao-${pratica.id}" rows="4" class="w-full p-2 border rounded text-sm text-gray-600"></textarea>
+                                </div>
+                            </div>
+                            <div class="text-right space-x-2 pt-2">
+                                <button onclick="cancelarEdicao(${pratica.id})" class="text-xs text-gray-500 hover:underline font-medium">Cancelar</button>
+                                <button onclick="salvarEdicao(${pratica.id})" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1.5 px-4 rounded shadow-sm transition">💾 Salvar no Arquivo</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                lista.appendChild(card);
+            });
+        }
+
+        function alternarDetalhes(id) {
+            if(!document.getElementById(`formulario-edicao-${id}`).classList.contains('hidden')) return;
+            const painel = document.getElementById(`detalhe-${id}`);
+            const seta = document.getElementById(`seta-${id}`);
+            
+            if (painel.classList.contains('hidden')) {
+                painel.classList.remove('hidden');
+                seta.innerHTML = '▲';
+                seta.classList.add('text-indigo-600');
+            } else {
+                painel.classList.add('hidden');
+                seta.innerHTML = '▼';
+                seta.classList.remove('text-indigo-600');
+            }
+        }
+
+        function entrarModoEdicao(id) {
+            const pratica = bancoDados.praticas.find(p => p.id === id);
+            document.getElementById(`edit-input-titulo-${id}`).value = pratica.titulo;
+            document.getElementById(`edit-input-problema-${id}`).value = pratica.problema;
+            document.getElementById(`edit-input-solucao-${id}`).value = pratica.solucao;
+
+            document.getElementById(`visualizacao-${id}`).classList.add('hidden');
+            document.getElementById(`formulario-edicao-${id}`).classList.remove('hidden');
+        }
+
+        function cancelarEdicao(id) {
+            document.getElementById(`visualizacao-${id}`).classList.remove('hidden');
+            document.getElementById(`formulario-edicao-${id}`).classList.add('hidden');
+        }
+
+        async function salvarEdicao(id) {
+            const index = bancoDados.praticas.findIndex(p => p.id === id);
+            const novoTitulo = document.getElementById(`edit-input-titulo-${id}`).value.trim();
+            const novoProblema = document.getElementById(`edit-input-problema-${id}`).value.trim();
+            const novoSolucao = document.getElementById(`edit-input-solucao-${id}`).value.trim();
+
+            if(!novoTitulo || !novoProblema || !novoSolucao) return alert("Preencha todos os campos!");
+
+            bancoDados.praticas[index].titulo = novoTitulo;
+            bancoDados.praticas[index].problema = novoProblema;
+            bancoDados.praticas[index].solucao = novoSolucao;
+            bancoDados.praticas[index].data = new Date().toLocaleDateString('pt-BR') + " (Modificado)";
+
+            cancelarEdicao(id);
+            await salvarNoArquivoFisico(); // Grava fisicamente na hora
+            
+            // Mantém o card aberto após renderizar
+            document.getElementById(`detalhe-${id}`).classList.remove('hidden');
+            document.getElementById(`seta-${id}`).innerHTML = '▲';
+        }
+
+        document.getElementById('formPratica').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const novaPratica = {
+                id: Date.now(),
+                modulo: document.getElementById('moduloSelect').value,
+                titulo: document.getElementById('titulo').value,
+                problema: document.getElementById('problema').value,
+                solucao: document.getElementById('solucao').value,
+                data: new Date().toLocaleDateString('pt-BR')
+            };
+
+            bancoDados.praticas.push(novaPratica);
+            this.reset();
+            await salvarNoArquivoFisico(); // Grava fisicamente na hora
+        });
+    </script>
+</body>
+</html>
